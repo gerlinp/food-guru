@@ -1,0 +1,21 @@
+body {
+  background: #2e5a88;
+  min-width: 300px;
+}
+
+.container {
+  max-width: 800px;
+}
+
+.auto-grow-textarea {
+  min-height: 50px; /* Adjust as needed */
+  resize: none; /* Prevent manual resizing */
+}
+
+#recipe-text {
+  max-height: 50vh;
+}
+
+#wish {
+  overflow: hidden;
+}
