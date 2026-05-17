@@ -1,4 +1,4 @@
-function Footer({ onOpenReviews, onOpenAdmin }) {
+function Footer({ onOpenReviews }) {
   return (
     <footer className="dt-footer">
       <div>
@@ -29,7 +29,6 @@ function Footer({ onOpenReviews, onOpenAdmin }) {
         <a>About</a>
         <a>Press</a>
         <a>Careers</a>
-        <a onClick={onOpenAdmin} style={{ marginTop:24, opacity:0.4, fontSize:11, letterSpacing:'0.1em', textTransform:'uppercase' }}>Admin</a>
       </div>
     </footer>
   );

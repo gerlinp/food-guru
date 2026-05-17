@@ -18,12 +18,20 @@ function Recipe({ recipeId, onBack, onOpenTranslator }) {
   return (
     <React.Fragment>
       {/* Breadcrumb */}
-      <div style={{ padding:'24px 56px 0', display:'flex', alignItems:'center', gap:8, fontSize:13, color:'var(--ink-mute)' }}>
-        <a onClick={onBack} style={{ cursor:'pointer' }}>Recipes</a>
-        <span>/</span>
-        <span>{recipe.cuisine}</span>
-        <span>/</span>
-        <span style={{ color:'var(--ink)' }}>{recipe.category}</span>
+      <div style={{ padding:'24px 56px 0', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:8, fontSize:13, color:'var(--ink-mute)' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+          <a onClick={onBack} style={{ cursor:'pointer' }}>Recipes</a>
+          <span>/</span>
+          <span>{recipe.cuisine}</span>
+          <span>/</span>
+          <span style={{ color:'var(--ink)' }}>{recipe.category}</span>
+        </div>
+        {recipe.date && (
+          <div style={{ fontSize:12 }}>
+            Published {recipe.date}
+            {recipe.updated && <span> · Updated {recipe.updated}</span>}
+          </div>
+        )}
       </div>
 
       {/* Hero */}
@@ -43,12 +51,20 @@ function Recipe({ recipeId, onBack, onOpenTranslator }) {
               </div>
               <span>by <strong style={{ fontWeight:600 }}>{recipe.author}</strong></span>
             </div>
-            <span style={{ display:'flex', alignItems:'center', gap:8 }}>
-              <Stars value={recipe.rating} size={12}/> {recipe.rating} <span style={{ opacity:0.7 }}>({recipe.reviews} reviews)</span>
-            </span>
           </div>
         </div>
       </div>
+
+      {/* Photo gallery */}
+      {recipe.photos && recipe.photos.length > 1 && (
+        <div style={{ display:'flex', gap:10, padding:'16px 56px 0', overflowX:'auto' }}>
+          {recipe.photos.map((src, i) => (
+            <div key={i} style={{ flexShrink:0, width:260, height:180, borderRadius:14, overflow:'hidden' }}>
+              <img src={src} alt={`${recipe.title} ${i + 1}`} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Body */}
       <div className="dt-recipe-body">
@@ -60,7 +76,7 @@ function Recipe({ recipeId, onBack, onOpenTranslator }) {
               { label:<><Icon.clock/> Active</>,  val:`${Math.max(15, recipe.minutes - 10)} min` },
               { label:<><Icon.clock/> Total</>,   val:`${recipe.minutes} min` },
               { label:<><Icon.bowl/> Serves</>,   val:servings },
-              { label:<><Icon.flame/> Skill</>,   val:recipe.difficulty },
+              { label:<><Icon.flame/> Skill</>,   val:<span style={{ color:'var(--orange)' }}>{recipe.difficulty}</span> },
               { label:<><Icon.fork/> Cuisine</>,  val:recipe.cuisine },
             ].map((m, i) => (
               <div key={i} className="dt-recipe-meta-col">

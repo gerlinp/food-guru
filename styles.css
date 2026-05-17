@@ -279,6 +279,62 @@ textarea.dt-input { height: auto; padding: 12px 14px; resize: none; font-family:
   .dt-footer { padding: 36px 20px 24px; grid-template-columns: 1fr; gap: 28px; }
   .dt-reviews-grid { grid-template-columns: 1fr; }
 }
+/* ─── Map ──────────────────────────────────────────────────────────────────── */
+.guru-pin {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--orange); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 10px rgba(14,26,47,0.25);
+  cursor: pointer;
+  transition: transform 120ms;
+}
+.guru-pin:hover { transform: scale(1.15); }
+
+.guru-cluster {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--navy); color: var(--orange);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 14px; font-weight: 700;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 12px rgba(14,26,47,0.28);
+  cursor: pointer;
+  transition: transform 120ms;
+}
+.guru-cluster:hover { transform: scale(1.1); }
+
+.guru-leaflet-popup .leaflet-popup-content-wrapper {
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(14,26,47,0.14);
+  border: 1px solid var(--line-soft);
+  padding: 0;
+}
+.guru-leaflet-popup .leaflet-popup-content { margin: 0; }
+.guru-leaflet-popup .leaflet-popup-tip-container { display: none; }
+
+.guru-popup { padding: 16px 18px; min-width: 210px; }
+.guru-popup-name { font-weight: 700; font-size: 15px; color: var(--ink); margin-bottom: 4px; }
+.guru-popup-loc   { font-size: 12px; color: var(--ink-mute); margin-bottom: 6px; }
+.guru-popup-stars { display: flex; gap: 2px; margin-bottom: 6px; }
+.guru-popup-meta  { font-size: 13px; color: var(--ink-soft); margin-bottom: 8px; }
+.guru-popup-hed  { font-size: 12px; color: var(--ink-mute); font-style: italic; line-height: 1.5; margin-bottom: 14px; }
+.guru-popup-actions { display: flex; gap: 8px; }
+.guru-popup-btn {
+  flex: 1; padding: 8px 10px; border-radius: 8px;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  text-align: center; text-decoration: none; display: inline-block;
+  background: var(--navy); color: var(--orange); border: none;
+  font-family: inherit;
+}
+.guru-popup-btn.outline {
+  background: transparent; color: var(--ink);
+  border: 1px solid var(--line-soft);
+}
+
+@media (max-width: 600px) {
+  .guru-map-grid { grid-template-columns: 1fr !important; }
+}
+
 @media (max-width: 420px) {
   .dt-hero-headline { font-size: 38px; }
   .dt-recipe-hero { height: 320px; }

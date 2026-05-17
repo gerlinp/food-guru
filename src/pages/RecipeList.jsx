@@ -1,4 +1,4 @@
-function RecipeList({ onOpenRecipe, onOpenTranslator, onOpenAdmin }) {
+function RecipeList({ onOpenRecipe, onOpenTranslator }) {
   const [category, setCategory] = React.useState('All');
   const [search,   setSearch]   = React.useState('');
 
@@ -84,9 +84,7 @@ function RecipeList({ onOpenRecipe, onOpenTranslator, onOpenAdmin }) {
                   <div className="dt-recipe-row-meta">
                     by <strong style={{ color:'var(--ink)' }}>{r.author}</strong>
                     <span className="dot"/><Icon.clock/> {r.minutes} min
-                    <span className="dot"/><Stars value={r.rating} size={11}/> {r.rating}
-                    <span style={{ color:'var(--ink-mute)' }}>({r.reviews})</span>
-                    <span className="dot"/>{r.difficulty}
+                    <span className="dot"/><span style={{ color:'var(--orange)' }}>{r.difficulty}</span>
                   </div>
                 </div>
                 <div style={{ color:'var(--ink-mute)', fontSize:20, flexShrink:0 }}>→</div>
@@ -137,7 +135,7 @@ function RecipeList({ onOpenRecipe, onOpenTranslator, onOpenAdmin }) {
         </aside>
       </section>
 
-      <Footer onOpenAdmin={onOpenAdmin}/>
+      <Footer/>
     </React.Fragment>
   );
 }

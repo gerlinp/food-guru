@@ -8,4 +8,5 @@ const Icon = {
   sparkle:  p => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" {...p}><path d="M12 3l1.8 5.7L19.5 10l-5.7 1.8L12 18l-1.8-6.2L4.5 10l5.7-1.3L12 3zM19 17l.8 2.2 2.2.8-2.2.8L19 23l-.8-2.2-2.2-.8 2.2-.8L19 17zM5 14l.6 1.7 1.7.6-1.7.6L5 18.5l-.6-1.6L2.7 16.3l1.7-.6L5 14z" fill="currentColor"/></svg>,
   flame:    p => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" {...p}><path d="M12 3c0 4-5 5-5 10a5 5 0 0010 0c0-2-1-3-2-4 0 2-1 3-2 3 0-3 1-5-1-9z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/></svg>,
   bowl:     p => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" {...p}><path d="M3 11h18a9 9 0 01-18 0z" stroke="currentColor" strokeWidth="1.5"/><path d="M5 11c0-3 3-5 7-5s7 2 7 5" stroke="currentColor" strokeWidth="1.5"/></svg>,
+  pin:      p => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" {...p}><path d="M12 21s-7-7.75-7-12a7 7 0 0114 0c0 4.25-7 12-7 12z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/><circle cx="12" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.5"/></svg>,
 };

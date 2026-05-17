@@ -1,7 +1,8 @@
-function Home({ onOpenRecipe, onOpenTranslator, onOpenReviews, onOpenAdmin, onOpenRecipeList }) {
+function Home({ onOpenRecipe, onOpenTranslator, onOpenReviews, onOpenRecipeList }) {
   const featured      = RECIPES.find(r => r.id === SITE_SETTINGS.featuredRecipeId) || RECIPES[0];
   const rail          = RECIPES.filter(r => r.id !== featured.id).slice(0, 3);
-  const librarySnap   = RECIPES.filter(r => r.id !== featured.id).slice(0, 4);
+  const shownIds      = new Set([featured.id, ...rail.map(r => r.id)]);
+  const librarySnap   = RECIPES.filter(r => !shownIds.has(r.id)).slice(0, 4);
   const reviewsTeaser = REVIEWS.slice(0, 3);
 
   return (
@@ -13,24 +14,26 @@ function Home({ onOpenRecipe, onOpenTranslator, onOpenReviews, onOpenAdmin, onOp
           <h1 className="dt-hero-headline">{SITE_SETTINGS.heroHeadline}<br/><em>{SITE_SETTINGS.heroHeadlineEm}</em></h1>
           <p className="dt-hero-sub">{SITE_SETTINGS.heroSub}</p>
           <div style={{ display:'flex', gap:12 }}>
-            <button onClick={() => onOpenRecipe(featured.id)} className="dt-btn dark lg">Start with tonight's pick</button>
-            <button onClick={onOpenReviews} className="dt-btn ghost lg">Read this week's reviews</button>
+            <button onClick={onOpenRecipeList} className="dt-btn dark lg">Recipes</button>
+            <button onClick={onOpenReviews} className="dt-btn ghost lg">Reviews</button>
           </div>
         </div>
 
         <div onClick={() => onOpenRecipe(featured.id)} style={{ cursor:'pointer' }}>
           <div className="dt-hero-photo">
-            <Photo tint={featured.tint} style={{ position:'absolute', inset:0 }}/>
+            <Photo tint={featured.tint} src={featured.photo || undefined} style={{ position:'absolute', inset:0 }}/>
             <div className="dt-hero-photo-tag">
               <span className="dt-chip accent" style={{ height:28, fontSize:12 }}>Editor's pick</span>
               <span className="dt-chip" style={{ background:'rgba(255,255,255,0.15)', color:'#fff', border:'1px solid rgba(255,255,255,0.25)', height:28, fontSize:12 }}>
                 {featured.cuisine}
               </span>
             </div>
-            <div className="photo-label">
-              <span>{featured.title.toLowerCase()}</span>
-              <span style={{ opacity:0.5 }}>[photo]</span>
-            </div>
+            {!featured.photo && (
+              <div className="photo-label">
+                <span>{featured.title.toLowerCase()}</span>
+                <span style={{ opacity:0.5 }}>[photo]</span>
+              </div>
+            )}
             <div className="dt-hero-photo-content">
               <h2 className="dt-serif" style={{ fontSize:38, margin:'0 0 12px', maxWidth:480, lineHeight:1.05, letterSpacing:'-0.02em' }}>
                 {featured.title}
@@ -38,9 +41,7 @@ function Home({ onOpenRecipe, onOpenTranslator, onOpenReviews, onOpenAdmin, onOp
               <div style={{ display:'flex', alignItems:'center', gap:18, fontSize:14, opacity:0.95 }}>
                 <span style={{ display:'flex', alignItems:'center', gap:6 }}><Icon.clock/> {featured.minutes} min</span>
                 <span style={{ display:'flex', alignItems:'center', gap:6 }}><Icon.bowl/> Serves {featured.servings}</span>
-                <span style={{ display:'flex', alignItems:'center', gap:8 }}>
-                  <Stars value={featured.rating} size={12}/> {featured.rating} <span style={{ opacity:0.7 }}>({featured.reviews})</span>
-                </span>
+                <span style={{ display:'flex', alignItems:'center', gap:6 }}><Icon.flame/> <span style={{ color:'var(--orange)' }}>{featured.difficulty}</span></span>
               </div>
             </div>
           </div>
@@ -49,12 +50,14 @@ function Home({ onOpenRecipe, onOpenTranslator, onOpenReviews, onOpenAdmin, onOp
 
       {/* Stats */}
       <section className="dt-stats">
-        {SITE_SETTINGS.stats.map(s => (
-          <div key={s.label}>
-            <h3 className="dt-stat-num">{s.num}</h3>
-            <div style={{ fontSize:13, color:'var(--ink-mute)' }}>{s.label}</div>
-          </div>
-        ))}
+        <div>
+          <h3 className="dt-stat-num">{RECIPES.length}</h3>
+          <div style={{ fontSize:13, color:'var(--ink-mute)' }}>Recipes in the library</div>
+        </div>
+        <div>
+          <h3 className="dt-stat-num">{REVIEWS.length}</h3>
+          <div style={{ fontSize:13, color:'var(--ink-mute)' }}>Restaurant reviews</div>
+        </div>
       </section>
 
       {/* Featured rail */}
@@ -69,7 +72,7 @@ function Home({ onOpenRecipe, onOpenTranslator, onOpenReviews, onOpenAdmin, onOp
           </div>
           <div className="dt-featured-grid">
             <div onClick={() => onOpenRecipe(rail[0].id)} className="dt-feature-card large">
-              <Photo tint={rail[0].tint} label={rail[0].cuisine.toLowerCase()}/>
+              <Photo tint={rail[0].tint} src={rail[0].photo || undefined} label={rail[0].cuisine.toLowerCase()}/>
               <div style={{ marginTop:18, display:'flex', gap:6 }}>
                 <span className="dt-chip ghost" style={{ height:26, fontSize:11 }}>{rail[0].cuisine}</span>
                 <span className="dt-chip ghost" style={{ height:26, fontSize:11 }}>{rail[0].category}</span>
@@ -77,20 +80,19 @@ function Home({ onOpenRecipe, onOpenTranslator, onOpenReviews, onOpenAdmin, onOp
               <h3>{rail[0].title}</h3>
               <div className="dt-feature-meta">
                 <Icon.clock/> {rail[0].minutes} min<span className="dot"/>
-                <Stars value={rail[0].rating} size={11}/> {rail[0].rating}<span className="dot"/>
-                {rail[0].difficulty}
+                <span style={{ color:'var(--orange)' }}>{rail[0].difficulty}</span>
               </div>
             </div>
             {rail.slice(1).map(r => (
               <div key={r.id} onClick={() => onOpenRecipe(r.id)} className="dt-feature-card small">
-                <Photo tint={r.tint} label={r.cuisine.toLowerCase()}/>
+                <Photo tint={r.tint} src={r.photo || undefined} label={r.cuisine.toLowerCase()}/>
                 <div style={{ marginTop:14, display:'flex', gap:6 }}>
                   <span className="dt-chip ghost" style={{ height:24, fontSize:11 }}>{r.cuisine}</span>
                 </div>
                 <h3>{r.title}</h3>
                 <div className="dt-feature-meta">
                   <Icon.clock/> {r.minutes}m<span className="dot"/>
-                  <Stars value={r.rating} size={11}/> {r.rating}
+                  <span style={{ color:'var(--orange)' }}>{r.difficulty}</span>
                 </div>
               </div>
             ))}
@@ -122,9 +124,7 @@ function Home({ onOpenRecipe, onOpenTranslator, onOpenReviews, onOpenAdmin, onOp
                   <div className="dt-recipe-row-meta">
                     by <strong style={{ color:'var(--ink)' }}>{r.author}</strong>
                     <span className="dot"/><Icon.clock/> {r.minutes} min
-                    <span className="dot"/><Stars value={r.rating} size={11}/> {r.rating}
-                    <span style={{ color:'var(--ink-mute)' }}>({r.reviews})</span>
-                    <span className="dot"/>{r.difficulty}
+                    <span className="dot"/><span style={{ color:'var(--orange)' }}>{r.difficulty}</span>
                   </div>
                 </div>
                 <div style={{ color:'var(--ink-mute)', fontSize:20 }}>→</div>
@@ -144,20 +144,6 @@ function Home({ onOpenRecipe, onOpenTranslator, onOpenReviews, onOpenAdmin, onOp
                 <span key={t} className="dt-chip ghost">{t}</span>
               ))}
             </div>
-          </div>
-
-          <div className="dt-side-card">
-            <h4>Trending this week</h4>
-            {RECIPES.filter(r => r.id !== featured.id).slice(0, 3).map((r, i) => (
-              <div key={r.id} onClick={() => onOpenRecipe(r.id)} style={{ display:'flex', gap:12, cursor:'pointer', padding:'12px 0', borderBottom:i < 2 ? '1px solid var(--line-soft)' : 'none', alignItems:'center' }}>
-                <div style={{ fontFamily:'var(--display)', fontSize:22, fontStyle:'italic', color:'var(--orange)', fontWeight:500, width:24, flexShrink:0 }}>{i + 1}</div>
-                <Photo tint={r.tint} style={{ width:56, height:56, borderRadius:10, flexShrink:0 }}/>
-                <div style={{ minWidth:0 }}>
-                  <div className="dt-serif" style={{ fontSize:15, lineHeight:1.25 }}>{r.title}</div>
-                  <div style={{ fontSize:11, color:'var(--ink-mute)', marginTop:4 }}>{r.cuisine} · {r.minutes}m</div>
-                </div>
-              </div>
-            ))}
           </div>
 
           <div
@@ -208,7 +194,7 @@ function Home({ onOpenRecipe, onOpenTranslator, onOpenReviews, onOpenAdmin, onOp
         </section>
       )}
 
-      <Footer onOpenReviews={onOpenReviews} onOpenAdmin={onOpenAdmin}/>
+      <Footer onOpenReviews={onOpenReviews}/>
     </React.Fragment>
   );
 }

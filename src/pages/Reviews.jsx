@@ -1,23 +1,13 @@
-function ReviewScore({ value, small = false }) {
-  return (
-    <span style={{ display:'inline-flex', alignItems:'center', gap:6, fontFamily:'var(--mono)', fontWeight:600, fontSize:small ? 12 : 13, color:'var(--ink)' }}>
-      <span style={{ width:small ? 22 : 26, height:small ? 22 : 26, borderRadius:7, background:'var(--navy)', color:'var(--orange)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:small ? 11 : 12, fontWeight:700 }}>
-        {value.toFixed(1)}
-      </span>
-      <span style={{ color:'var(--ink-mute)', fontWeight:400 }}>/ 5</span>
-    </span>
-  );
-}
 
 function ReviewCard({ review: r }) {
   return (
-    <article className="dt-review-card">
+    <article id={r.id} className="dt-review-card">
       <Photo tint={r.tint} label={r.name.toLowerCase()} style={{ height:240, borderRadius:'18px 18px 0 0' }}/>
       <div style={{ padding:24 }}>
         <div className="dt-eyebrow" style={{ marginBottom:6 }}>{r.city}</div>
         <h3 className="dt-serif" style={{ fontSize:26, lineHeight:1.1, margin:'4px 0 8px', letterSpacing:'-0.015em' }}>{r.name}</h3>
         <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:14, fontSize:12, color:'var(--ink-mute)' }}>
-          <span>{r.cuisine}</span><span className="dot"/><span>{r.price}</span><span className="dot"/><ReviewScore value={r.rating} small/>
+          <span>{r.cuisine}</span><span className="dot"/><span>{r.price}</span><span className="dot"/><Stars value={r.rating} size={13}/>
         </div>
         <p style={{ fontSize:14.5, lineHeight:1.55, color:'var(--ink-soft)', margin:'0 0 16px' }}>{r.excerpt}</p>
         <div style={{ borderTop:'1px solid var(--line-soft)', paddingTop:14, display:'flex', alignItems:'center', justifyContent:'space-between', gap:12 }}>
@@ -35,7 +25,7 @@ function ReviewCard({ review: r }) {
   );
 }
 
-function Reviews({ onOpenAdmin }) {
+function Reviews() {
   const [city, setCity] = React.useState('All cities');
   const [sort, setSort] = React.useState('recent');
 
@@ -80,7 +70,7 @@ function Reviews({ onOpenAdmin }) {
 
       {/* Featured review */}
       {featured && (
-        <section style={{ padding:'48px 56px 16px' }}>
+        <section id={featured.id} style={{ padding:'48px 56px 16px' }}>
           <div className="dt-review-featured">
             <div className="dt-review-featured-photo">
               <Photo tint={featured.tint} label={featured.name.toLowerCase()} style={{ position:'absolute', inset:0 }}/>
@@ -104,7 +94,7 @@ function Reviews({ onOpenAdmin }) {
                 <span className="dot"/>
                 <span>{featured.date}</span>
                 <span className="dot"/>
-                <ReviewScore value={featured.rating}/>
+                <Stars value={featured.rating} size={16}/>
               </div>
               <button className="dt-btn dark">Read full review →</button>
             </div>
@@ -123,7 +113,7 @@ function Reviews({ onOpenAdmin }) {
         </div>
       </section>
 
-      <Footer onOpenAdmin={onOpenAdmin}/>
+      <Footer/>
     </React.Fragment>
   );
 }

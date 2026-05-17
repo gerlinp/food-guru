@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
 </head>
 <body>
   <div id="root"></div>
@@ -15,6 +18,8 @@
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
   <!-- data & utilities -->
   <script type="text/babel" src="src/data.js"></script>
@@ -32,7 +37,7 @@
   <script type="text/babel" src="src/pages/Translator.jsx"></script>
   <script type="text/babel" src="src/pages/Reviews.jsx"></script>
   <script type="text/babel" src="src/pages/RecipeList.jsx"></script>
-  <script type="text/babel" src="src/pages/Admin.jsx"></script>
+  <script type="text/babel" src="src/pages/Map.jsx"></script>
 
   <!-- app shell -->
   <script type="text/babel" src="src/App.jsx"></script>
