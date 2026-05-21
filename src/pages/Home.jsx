@@ -65,8 +65,8 @@ function Home({ onOpenRecipe, onOpenTranslator, onOpenReviews, onOpenRecipeList 
         <section className="dt-section">
           <div className="dt-section-head">
             <div>
-              <div className="dt-eyebrow" style={{ marginBottom:6 }}>This week</div>
-              <h2 className="dt-section-title">Hand-picked, freshly tested.</h2>
+              <div className="dt-eyebrow" style={{ marginBottom:6 }}>The Guru's picks</div>
+              <h2 className="dt-section-title">Tried, tested, approved.</h2>
             </div>
             <button className="dt-btn ghost sm">View all →</button>
           </div>
@@ -170,14 +170,14 @@ function Home({ onOpenRecipe, onOpenTranslator, onOpenReviews, onOpenRecipeList 
           <div className="dt-section-head">
             <div>
               <div className="dt-eyebrow" style={{ marginBottom:6 }}>Restaurant reviews</div>
-              <h2 className="dt-section-title">From the field this week.</h2>
+              <h2 className="dt-section-title">From the field.</h2>
             </div>
             <button onClick={onOpenReviews} className="dt-btn ghost sm">All reviews →</button>
           </div>
           <div className="dt-featured-grid">
             {reviewsTeaser.map((r, i) => (
               <div key={r.id} onClick={onOpenReviews} className={`dt-feature-card ${i === 0 ? 'large' : 'small'}`}>
-                <Photo tint={r.tint} label={r.name.toLowerCase()}/>
+                <Photo tint={r.tint} src={r.photo || undefined} label={r.name.toLowerCase()} objectPosition={r.photoPosition || 'center'}/>
                 <div style={{ marginTop:i === 0 ? 18 : 14, display:'flex', gap:6, alignItems:'center' }}>
                   <span className="dt-chip ghost" style={{ height:24, fontSize:11 }}>{r.cuisine}</span>
                   <span style={{ fontSize:11, color:'var(--ink-mute)', textTransform:'uppercase', letterSpacing:'0.1em', fontWeight:600 }}>{r.city}</span>

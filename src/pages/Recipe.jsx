@@ -69,7 +69,7 @@ function Recipe({ recipeId, onBack, onOpenTranslator }) {
       {/* Body */}
       <div className="dt-recipe-body">
         <div className="dt-recipe-main">
-          <p className="desc" style={{ margin:0 }}>{recipe.description || 'A weeknight favorite from the Hungry Guru library.'}</p>
+          <p className="desc" style={{ margin:0 }}>{recipe.description}</p>
 
           <div className="dt-recipe-meta-row">
             {[
