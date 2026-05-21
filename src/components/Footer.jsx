@@ -21,7 +21,7 @@ function Footer({ onOpenReviews }) {
         <h5>Eat out</h5>
         <a onClick={onOpenReviews}>Restaurant reviews</a>
         <a>Cities</a>
-        <a>This week's pick</a>
+        <a>Featured</a>
       </div>
 
       <div>

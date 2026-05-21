@@ -104,7 +104,7 @@ function RecipeList({ onOpenRecipe, onOpenTranslator }) {
           </div>
 
           <div className="dt-side-card">
-            <h4>Trending this week</h4>
+            <h4>From the library</h4>
             {RECIPES.slice(0, 3).map((r, i) => (
               <div key={r.id} onClick={() => onOpenRecipe(r.id)} style={{ display:'flex', gap:12, cursor:'pointer', padding:'12px 0', borderBottom:i < 2 ? '1px solid var(--line-soft)' : 'none', alignItems:'center' }}>
                 <div style={{ fontFamily:'var(--display)', fontSize:22, fontStyle:'italic', color:'var(--orange)', fontWeight:500, width:24, flexShrink:0 }}>{i + 1}</div>

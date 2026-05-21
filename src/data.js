@@ -261,7 +261,7 @@ const SITE_SETTINGS_DEFAULT = {
   heroEyebrow:      'Curated by the Guru',
   heroHeadline:     'Favorite recipes,',
   heroHeadlineEm:   'favorite restaurants.',
-  heroSub:          'A working notebook of the dishes the Guru cooks on repeat and the rooms she keeps going back to — every recipe tested in three home kitchens, every restaurant visited at least twice before it makes the page.',
+  heroSub:          'A working notebook of the dishes the Guru cooks on repeat and the rooms he keeps going back to — every recipe tested in three home kitchens, every restaurant visited at least twice before it makes the page.',
   featuredRecipeId: 'spicy-broiled-salmon',
   stats: [
     { num: '1,240+', label: 'Recipes from 84 cooks' },
@@ -269,8 +269,8 @@ const SITE_SETTINGS_DEFAULT = {
     { num: '32',     label: 'Cuisines covered' },
     { num: '4.9 ★',  label: 'Across 18,000 reviews' },
   ],
-  footerDesc: "A working notebook of the Guru's favorite recipes and the restaurants she'd send you to. Tested twice, written honestly.",
-  reviewsIntro: 'Long-form reviews from our editors and contributing cooks — written after at least two visits, never comped, and always with a recommendation we\'d send our closest friend. New entries every Wednesday.',
+  footerDesc: "A working notebook of the Guru's favorite recipes and the restaurants he'd send you to. Tested twice, written honestly.",
+  reviewsIntro: 'Honest write-ups of restaurants worth your time — visited more than once, never comped, and always with a clear recommendation.',
 };
 
 // ─── Live data ────────────────────────────────────────────────────────────────

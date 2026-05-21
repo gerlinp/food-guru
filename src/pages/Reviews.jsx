@@ -106,7 +106,7 @@ function Reviews({ onOpenReview }) {
                 </div>
               )}
               <div style={{ display:'flex', gap:8, marginBottom:14 }}>
-                <span className="dt-chip accent" style={{ height:26, fontSize:11 }}>This week's pick</span>
+                <span className="dt-chip accent" style={{ height:26, fontSize:11 }}>Featured</span>
                 <span className="dt-chip ghost" style={{ height:26, fontSize:11 }}>{featured.cuisine}</span>
               </div>
               <div className="dt-eyebrow" style={{ marginBottom:6 }}>{featured.city} · {featured.neighborhood} · {featured.price}</div>

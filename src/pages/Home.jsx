@@ -65,8 +65,8 @@ function Home({ onOpenRecipe, onOpenTranslator, onOpenReviews, onOpenRecipeList 
         <section className="dt-section">
           <div className="dt-section-head">
             <div>
-              <div className="dt-eyebrow" style={{ marginBottom:6 }}>This week</div>
-              <h2 className="dt-section-title">Hand-picked, freshly tested.</h2>
+              <div className="dt-eyebrow" style={{ marginBottom:6 }}>The Guru's picks</div>
+              <h2 className="dt-section-title">Tried, tested, approved.</h2>
             </div>
             <button className="dt-btn ghost sm">View all →</button>
           </div>
@@ -170,7 +170,7 @@ function Home({ onOpenRecipe, onOpenTranslator, onOpenReviews, onOpenRecipeList 
           <div className="dt-section-head">
             <div>
               <div className="dt-eyebrow" style={{ marginBottom:6 }}>Restaurant reviews</div>
-              <h2 className="dt-section-title">From the field this week.</h2>
+              <h2 className="dt-section-title">From the field.</h2>
             </div>
             <button onClick={onOpenReviews} className="dt-btn ghost sm">All reviews →</button>
           </div>
