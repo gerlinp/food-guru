@@ -90,6 +90,21 @@ function Reviews({ onOpenReview }) {
               <Photo tint={featured.tint} src={featured.photo || undefined} label={featured.name.toLowerCase()} objectPosition={featured.photoPosition || 'center'} style={{ position:'absolute', inset:0 }}/>
             </div>
             <div className="dt-review-featured-body">
+              {(featured.photos || []).length > 0 && (
+                <div style={{ display:'flex', gap:10, marginBottom:20, overflowX:'auto', paddingBottom:4 }}>
+                  {(featured.photos || []).map((p, i) => {
+                    const photo = typeof p === 'string' ? { src:p, caption:'' } : p;
+                    return (
+                      <div key={i} style={{ flexShrink:0 }}>
+                        <div style={{ width:130, height:90, borderRadius:10, overflow:'hidden' }}>
+                          <img src={photo.src} alt={photo.caption || featured.name} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
+                        </div>
+                        {photo.caption && <div style={{ fontSize:11, color:'var(--ink-mute)', marginTop:4, textAlign:'center', maxWidth:130 }}>{photo.caption}</div>}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
               <div style={{ display:'flex', gap:8, marginBottom:14 }}>
                 <span className="dt-chip accent" style={{ height:26, fontSize:11 }}>This week's pick</span>
                 <span className="dt-chip ghost" style={{ height:26, fontSize:11 }}>{featured.cuisine}</span>
