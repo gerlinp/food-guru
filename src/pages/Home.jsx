@@ -177,7 +177,7 @@ function Home({ onOpenRecipe, onOpenTranslator, onOpenReviews, onOpenRecipeList 
           <div className="dt-featured-grid">
             {reviewsTeaser.map((r, i) => (
               <div key={r.id} onClick={onOpenReviews} className={`dt-feature-card ${i === 0 ? 'large' : 'small'}`}>
-                <Photo tint={r.tint} label={r.name.toLowerCase()}/>
+                <Photo tint={r.tint} src={r.photo || undefined} label={r.name.toLowerCase()} objectPosition={r.photoPosition || 'center'}/>
                 <div style={{ marginTop:i === 0 ? 18 : 14, display:'flex', gap:6, alignItems:'center' }}>
                   <span className="dt-chip ghost" style={{ height:24, fontSize:11 }}>{r.cuisine}</span>
                   <span style={{ fontSize:11, color:'var(--ink-mute)', textTransform:'uppercase', letterSpacing:'0.1em', fontWeight:600 }}>{r.city}</span>

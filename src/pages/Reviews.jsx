@@ -1,8 +1,22 @@
 
-function ReviewCard({ review: r }) {
+function ReviewCard({ review: r, onOpenReview }) {
+  const photos = (r.photos || []).map(p => typeof p === 'string' ? { src: p, caption: '' } : p);
+
   return (
-    <article id={r.id} className="dt-review-card">
-      <Photo tint={r.tint} label={r.name.toLowerCase()} style={{ height:240, borderRadius:'18px 18px 0 0' }}/>
+    <article id={r.id} className="dt-review-card" onClick={() => onOpenReview(r.id)} style={{ cursor:'pointer' }}>
+      <Photo tint={r.tint} src={r.photo || undefined} label={r.name.toLowerCase()} objectPosition={r.photoPosition || 'center'} style={{ height:240, borderRadius:'18px 18px 0 0' }}/>
+      {photos.length > 0 && (
+        <div style={{ display:'flex', gap:10, padding:'10px 12px 0', overflowX:'auto' }}>
+          {photos.map((photo, i) => (
+            <div key={i} style={{ flexShrink:0 }}>
+              <div style={{ width:110, height:76, borderRadius:8, overflow:'hidden' }}>
+                <img src={photo.src} alt={photo.caption || r.name} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
+              </div>
+              {photo.caption && <div style={{ fontSize:10, color:'var(--ink-mute)', marginTop:4, textAlign:'center', maxWidth:110, lineHeight:1.3 }}>{photo.caption}</div>}
+            </div>
+          ))}
+        </div>
+      )}
       <div style={{ padding:24 }}>
         <div className="dt-eyebrow" style={{ marginBottom:6 }}>{r.city}</div>
         <h3 className="dt-serif" style={{ fontSize:26, lineHeight:1.1, margin:'4px 0 8px', letterSpacing:'-0.015em' }}>{r.name}</h3>
@@ -25,7 +39,7 @@ function ReviewCard({ review: r }) {
   );
 }
 
-function Reviews() {
+function Reviews({ onOpenReview }) {
   const [city, setCity] = React.useState('All cities');
   const [sort, setSort] = React.useState('recent');
 
@@ -73,7 +87,7 @@ function Reviews() {
         <section id={featured.id} style={{ padding:'48px 56px 16px' }}>
           <div className="dt-review-featured">
             <div className="dt-review-featured-photo">
-              <Photo tint={featured.tint} label={featured.name.toLowerCase()} style={{ position:'absolute', inset:0 }}/>
+              <Photo tint={featured.tint} src={featured.photo || undefined} label={featured.name.toLowerCase()} objectPosition={featured.photoPosition || 'center'} style={{ position:'absolute', inset:0 }}/>
             </div>
             <div className="dt-review-featured-body">
               <div style={{ display:'flex', gap:8, marginBottom:14 }}>
@@ -96,7 +110,7 @@ function Reviews() {
                 <span className="dot"/>
                 <Stars value={featured.rating} size={16}/>
               </div>
-              <button className="dt-btn dark">Read full review →</button>
+              <button className="dt-btn dark" onClick={() => onOpenReview(featured.id)}>Read full review →</button>
             </div>
           </div>
         </section>
@@ -109,7 +123,7 @@ function Reviews() {
           <span style={{ fontSize:13, color:'var(--ink-mute)' }}>{rest.length} reviews</span>
         </div>
         <div className="dt-reviews-grid">
-          {rest.map(r => <ReviewCard key={r.id} review={r}/>)}
+          {rest.map(r => <ReviewCard key={r.id} review={r} onOpenReview={onOpenReview}/>)}
         </div>
       </section>
 

@@ -9,13 +9,13 @@ const starHtml = (rating, size = 13) => {
   ).join('');
 };
 
-function RestaurantMap({ onOpenReviews }) {
-  const mapRef           = React.useRef(null);
-  const mapInstanceRef   = React.useRef(null);
-  const clusterRef       = React.useRef(null);
-  const markersRef       = React.useRef({});
-  const onOpenReviewsRef = React.useRef(onOpenReviews);
-  React.useEffect(() => { onOpenReviewsRef.current = onOpenReviews; }, [onOpenReviews]);
+function RestaurantMap({ onOpenReview }) {
+  const mapRef          = React.useRef(null);
+  const mapInstanceRef  = React.useRef(null);
+  const clusterRef      = React.useRef(null);
+  const markersRef      = React.useRef({});
+  const onOpenReviewRef = React.useRef(onOpenReview);
+  React.useEffect(() => { onOpenReviewRef.current = onOpenReview; }, [onOpenReview]);
 
   const [search, setSearch] = React.useState('');
 
@@ -45,10 +45,7 @@ function RestaurantMap({ onOpenReviews }) {
   React.useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
-    window._guruGoToReview = id => {
-      onOpenReviewsRef.current();
-      setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 200);
-    };
+    window._guruGoToReview = id => onOpenReviewRef.current(id);
 
     const map = L.map(mapRef.current, {
       center: [20, 0],
@@ -168,26 +165,33 @@ function RestaurantMap({ onOpenReviews }) {
 
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(260px,1fr))', gap:12 }}>
           {filtered.map(r => (
-            <div key={r.id} style={{ padding:'18px 20px', border:'1px solid var(--line-soft)', borderRadius:14, background:'var(--white)', display:'flex', flexDirection:'column' }}>
-              <div onClick={() => flyTo(r.id)} style={{ cursor:'pointer', marginBottom:14 }}>
-                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:6 }}>
-                  <div style={{ fontWeight:700, fontSize:15, color:'var(--ink)', lineHeight:1.2 }}>{r.name}</div>
+            <div key={r.id} style={{ border:'1px solid var(--line-soft)', borderRadius:14, background:'var(--white)', display:'flex', flexDirection:'column', overflow:'hidden' }}>
+              <Photo
+                tint={r.tint}
+                src={r.photo || undefined}
+                label={r.name.toLowerCase()}
+                objectPosition={r.photoPosition || 'center'}
+                style={{ height:130, flexShrink:0 }}
+              />
+              <div style={{ padding:'14px 16px', display:'flex', flexDirection:'column', flex:1 }}>
+                <div onClick={() => flyTo(r.id)} style={{ cursor:'pointer', marginBottom:14 }}>
+                  <div style={{ fontWeight:700, fontSize:15, color:'var(--ink)', lineHeight:1.2, marginBottom:6 }}>{r.name}</div>
+                  <div style={{ marginBottom:5 }}><Stars value={r.rating} size={13}/></div>
+                  <div style={{ fontSize:12, color:'var(--ink-mute)', marginBottom:4 }}>{r.neighborhood} &middot; {r.city}</div>
+                  <div style={{ fontSize:13, color:'var(--ink-soft)' }}>{r.cuisine} &middot; {r.price}</div>
                 </div>
-                <div style={{ marginBottom:5 }}><Stars value={r.rating} size={13}/></div>
-                <div style={{ fontSize:12, color:'var(--ink-mute)', marginBottom:4 }}>{r.neighborhood} &middot; {r.city}</div>
-                <div style={{ fontSize:13, color:'var(--ink-soft)' }}>{r.cuisine} &middot; {r.price}</div>
-              </div>
-              <div style={{ display:'flex', gap:8, marginTop:'auto' }}>
-                <a
-                  href={`https://www.google.com/maps/dir/?api=1&destination=${r.lat},${r.lng}`}
-                  target="_blank"
-                  rel="noopener"
-                  style={{ flex:1, padding:'8px 10px', borderRadius:8, fontSize:12, fontWeight:600, textAlign:'center', textDecoration:'none', background:'transparent', color:'var(--ink)', border:'1px solid var(--line-soft)', display:'inline-block' }}
-                >↗ Directions</a>
-                <button
-                  onClick={() => { onOpenReviews(); setTimeout(() => document.getElementById(r.id)?.scrollIntoView({ behavior:'smooth', block:'center' }), 200); }}
-                  style={{ flex:1, padding:'8px 10px', borderRadius:8, fontSize:12, fontWeight:600, cursor:'pointer', background:'var(--navy)', color:'var(--orange)', border:'none', fontFamily:'inherit' }}
-                >Read review</button>
+                <div style={{ display:'flex', gap:8, marginTop:'auto' }}>
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${r.lat},${r.lng}`}
+                    target="_blank"
+                    rel="noopener"
+                    style={{ flex:1, padding:'8px 10px', borderRadius:8, fontSize:12, fontWeight:600, textAlign:'center', textDecoration:'none', background:'transparent', color:'var(--ink)', border:'1px solid var(--line-soft)', display:'inline-block' }}
+                  >↗ Directions</a>
+                  <button
+                    onClick={() => onOpenReview(r.id)}
+                    style={{ flex:1, padding:'8px 10px', borderRadius:8, fontSize:12, fontWeight:600, cursor:'pointer', background:'var(--navy)', color:'var(--orange)', border:'none', fontFamily:'inherit' }}
+                  >Read review</button>
+                </div>
               </div>
             </div>
           ))}
