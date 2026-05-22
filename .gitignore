@@ -3,6 +3,7 @@ node_modules/
 
 # Ignore environment variables
 .env
+src/config.js
 
 # Ignore build files
 build/
