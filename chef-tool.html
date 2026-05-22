@@ -1,0 +1,2198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chef Tool · Food Guru</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    :root{
+      --navy: #0e1a2f;
+      --navy-900: #0b1220;
+      --navy-800: #0f1b33;
+      --navy-700: #142647;
+      --navy-600: #1a305c;
+      --navy-500: #213c74;
+      --cream: #faf5ec;
+      --cream-50: #fdfbf7;
+      --cream-100: #faf5ec;
+      --cream-200: #f6edda;
+      --orange: #f0631c;
+      --orange-50: #fff4ed;
+      --orange-100: #ffe6d4;
+      --orange-200: #ffc8a3;
+      --orange-600: #f0631c;
+      --ink: #161616;
+      --ink-900: #0a0a0a;
+      --ink-800: #1a1a1a;
+      --ink-700: #2b2b2b;
+      --ink-600: #3d3d3d;
+      --ink-500: #515151;
+      --ink-400: #666;
+      --ink-300: #8a8a8a;
+      --ink-200: #aeaeae;
+      --ink-100: #d2d2d2;
+      --ink-50: #f5f5f5;
+      --green: #1f7a50;
+      --red: #b42f2f;
+      --amber: #c27914;
+      --radius-lg: 18px;
+      --radius-xl: 22px;
+      --radius-2xl: 28px;
+      --shadow-soft: 0 18px 45px rgba(0,0,0,.18);
+      --shadow-subtle: 0 10px 26px rgba(0,0,0,.10);
+      --shadow-floating: 0 22px 60px rgba(0,0,0,.22);
+      --ease-out: cubic-bezier(.22,.61,.36,1);
+      --ease-snap: cubic-bezier(.25,.46,.45,.94);
+      --font-display: "Newsreader", ui-serif, Georgia, "Times New Roman", serif;
+      --font-body: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+    body{
+      margin:0;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      font-family: var(--font-body);
+      color: var(--ink-900);
+      background:
+        radial-gradient(900px 600px at 12% 10%, rgba(240,99,28,.09), transparent 55%),
+        radial-gradient(900px 600px at 92% 18%, rgba(14,26,47,.10), transparent 55%),
+        radial-gradient(900px 600px at 55% 110%, rgba(14,26,47,.10), transparent 55%),
+        linear-gradient(180deg, var(--cream-50), var(--cream-100));
+    }
+
+    #root{
+      min-height:100%;
+      display:flex;
+      align-items:stretch;
+      justify-content:center;
+    }
+
+    .frame{
+      width:100%;
+      max-width:430px;
+      margin:0 auto;
+      background: linear-gradient(180deg, #ffffff, #fdfaf4 60%, #faf5ec 100%);
+      box-shadow: var(--shadow-floating);
+      border-radius: 0;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      position:relative;
+      overflow:hidden;
+    }
+
+    @media (min-width: 520px){
+      .frame{
+        min-height:auto;
+        height: 860px;
+        max-height: 92vh;
+        border-radius: var(--radius-2xl);
+        margin: 32px auto;
+        border: 1px solid rgba(14,26,47,.10);
+      }
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 14px 16px 10px;
+      gap:12px;
+      position:relative;
+      z-index:20;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .logo{
+      width:36px;
+      height:36px;
+      border-radius: 14px;
+      background:
+        radial-gradient(16px 16px at 30% 30%, rgba(255,255,255,.55), transparent 55%),
+        linear-gradient(135deg, var(--orange-600), #ff8a3d 42%, #f9a849 100%);
+      box-shadow: 0 10px 26px rgba(240,99,28,.24);
+      display:grid;
+      place-items:center;
+      flex:0 0 auto;
+    }
+    .brand-text{
+      min-width:0;
+    }
+    .brand-title{
+      font-family: var(--font-display);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      font-size: 15px;
+      color: var(--navy-900);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .brand-sub{
+      font-size: 11px;
+      color: var(--ink-400);
+      margin-top:-1px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(14,26,47,.06);
+      border: 1px solid rgba(14,26,47,.08);
+      color: var(--navy-700);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      user-select:none;
+      cursor:pointer;
+      transition: transform .18s var(--ease-out), background .18s var(--ease-out), border-color .18s var(--ease-out);
+    }
+    .pill:hover{ transform: translateY(-1px); background: rgba(14,26,47,.08); }
+    .pill:active{ transform: translateY(0px) scale(.99); }
+
+    .content{
+      flex:1 1 auto;
+      padding: 10px 14px 122px;
+      overflow:auto;
+      position:relative;
+      z-index:10;
+    }
+
+    .hero{
+      padding: 6px 4px 10px;
+    }
+    .kicker{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(14,26,47,.06);
+      border: 1px solid rgba(14,26,47,.08);
+      color: var(--navy-700);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      user-select:none;
+    }
+    .hero-title{
+      font-family: var(--font-display);
+      font-weight: 750;
+      letter-spacing: -0.05em;
+      font-size: 30px;
+      line-height: .98;
+      color: var(--navy-900);
+      margin: 12px 0 0;
+    }
+    .hero-sub{
+      margin: 10px 0 0;
+      color: var(--ink-600);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .mode-tabs{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:10px;
+      margin: 10px 2px 0;
+    }
+    .mode-tab{
+      position:relative;
+      border-radius: 18px;
+      border: 1px solid rgba(14,26,47,.10);
+      background: rgba(255,255,255,.75);
+      overflow:hidden;
+      cursor:pointer;
+      min-height: 106px;
+      padding: 12px 10px 10px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      transition: transform .18s var(--ease-out), border-color .18s var(--ease-out), box-shadow .18s var(--ease-out), background .18s var(--ease-out);
+      user-select:none;
+    }
+    .mode-tab:before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      opacity:0;
+      transition: opacity .24s var(--ease-out);
+      background:
+        radial-gradient(90px 50px at 20% 10%, rgba(255,255,255,.85), transparent 55%),
+        linear-gradient(135deg, rgba(240,99,28,.12), rgba(14,26,47,.06) 55%, rgba(240,99,28,.08));
+      pointer-events:none;
+    }
+    .mode-tab:hover{
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-subtle);
+      border-color: rgba(14,26,47,.14);
+      background: rgba(255,255,255,.92);
+    }
+    .mode-tab[data-active="true"]{
+      transform: translateY(-1px);
+      box-shadow: 0 18px 42px rgba(14,26,47,.16);
+      border-color: rgba(240,99,28,.35);
+      background: rgba(255,255,255,.98);
+    }
+    .mode-tab[data-active="true"]:before{ opacity:1; }
+    .mode-title{
+      font-family: var(--font-display);
+      font-weight: 750;
+      letter-spacing: -0.03em;
+      font-size: 14px;
+      color: var(--navy-900);
+      position:relative;
+      z-index:1;
+    }
+    .mode-sub{
+      font-size: 11px;
+      line-height:1.3;
+      color: var(--ink-500);
+      margin-top: 6px;
+      position:relative;
+      z-index:1;
+    }
+    .mode-icon{
+      width: 30px;
+      height: 30px;
+      border-radius: 14px;
+      display:grid;
+      place-items:center;
+      background: rgba(14,26,47,.06);
+      border: 1px solid rgba(14,26,47,.08);
+      position:relative;
+      z-index:1;
+      align-self:flex-start;
+    }
+
+    .panel{
+      margin: 14px 2px 0;
+    }
+    .card{
+      background: rgba(255,255,255,.86);
+      border: 1px solid rgba(14,26,47,.10);
+      border-radius: 22px;
+      box-shadow: var(--shadow-subtle);
+      overflow:hidden;
+    }
+    .card-section{
+      padding: 14px 14px;
+      border-bottom: 1px solid rgba(14,26,47,.08);
+    }
+    .card-section:last-child{ border-bottom:none; }
+    .label-row{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom: 8px;
+    }
+    .label{
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      font-size: 13px;
+      color: var(--navy-900);
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .hint{
+      font-size: 12px;
+      color: var(--ink-400);
+    }
+    textarea.input{
+      width:100%;
+      min-height: 120px;
+      resize: vertical;
+      border-radius: 16px;
+      border: 1px solid rgba(14,26,47,.14);
+      background: rgba(250,245,236,.55);
+      padding: 12px 12px;
+      outline:none;
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.35;
+      color: var(--ink-900);
+      transition: box-shadow .18s var(--ease-out), border-color .18s var(--ease-out), background .18s var(--ease-out);
+    }
+    textarea.input:focus{
+      border-color: rgba(240,99,28,.40);
+      box-shadow: 0 0 0 4px rgba(240,99,28,.10);
+      background: rgba(255,255,255,.85);
+    }
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top: 6px;
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(250,245,236,.78);
+      border: 1px solid rgba(14,26,47,.10);
+      color: var(--navy-800);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .16s var(--ease-out), border-color .16s var(--ease-out), background .16s var(--ease-out);
+    }
+    .chip:hover{ transform: translateY(-1px); border-color: rgba(14,26,47,.16); background: rgba(250,245,236,.95); }
+    .chip:active{ transform: translateY(0px) scale(.99); }
+    .chip[data-selected="true"]{
+      background: rgba(240,99,28,.12);
+      border-color: rgba(240,99,28,.34);
+      box-shadow: 0 10px 24px rgba(240,99,28,.12);
+      transform: translateY(-1px);
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:stretch;
+    }
+    .field{
+      flex:1 1 0;
+      min-width:0;
+    }
+    select.select, input.input{
+      width:100%;
+      border-radius: 14px;
+      border: 1px solid rgba(14,26,47,.14);
+      background: rgba(250,245,236,.55);
+      padding: 10px 10px;
+      outline:none;
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--ink-900);
+      transition: box-shadow .18s var(--ease-out), border-color .18s var(--ease-out), background .18s var(--ease-out);
+    }
+    select.select:focus, input.input:focus{
+      border-color: rgba(240,99,28,.40);
+      box-shadow: 0 0 0 4px rgba(240,99,28,.10);
+      background: rgba(255,255,255,.85);
+    }
+
+    .btn-primary{
+      width:100%;
+      border:none;
+      outline:none;
+      border-radius: 18px;
+      padding: 12px 12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      font-family: var(--font-body);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      font-size: 14px;
+      color: white;
+      cursor:pointer;
+      user-select:none;
+      position:relative;
+      overflow:hidden;
+      background: linear-gradient(135deg, var(--orange-600), #ff8a3d 45%, #f9a849 100%);
+      box-shadow: 0 18px 40px rgba(240,99,28,.24);
+      transition: transform .18s var(--ease-out), box-shadow .18s var(--ease-out), filter .18s var(--ease-out);
+    }
+    .btn-primary:before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(120px 60px at 22% 10%, rgba(255,255,255,.55), transparent 60%);
+      opacity:.9;
+      pointer-events:none;
+    }
+    .btn-primary:hover{ transform: translateY(-1px); box-shadow: 0 22px 55px rgba(240,99,28,.28); }
+    .btn-primary:active{ transform: translateY(0px) scale(.99); box-shadow: 0 14px 32px rgba(240,99,28,.22); }
+    .btn-primary:disabled{
+      cursor:default;
+      filter: saturate(.6);
+      opacity:.95;
+      transform:none;
+      box-shadow: 0 12px 30px rgba(240,99,28,.16);
+    }
+    .btn-primary:disabled:hover{ transform:none; }
+    .btn-text{ position:relative; z-index:1; }
+
+    .btn-secondary{
+      border:none;
+      outline:none;
+      border-radius: 16px;
+      padding: 10px 12px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      font-family: var(--font-body);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      font-size: 13px;
+      color: var(--navy-800);
+      cursor:pointer;
+      user-select:none;
+      background: rgba(14,26,47,.06);
+      border: 1px solid rgba(14,26,47,.10);
+      transition: transform .16s var(--ease-out), box-shadow .16s var(--ease-out), background .16s var(--ease-out), border-color .16s var(--ease-out);
+    }
+    .btn-secondary:hover{ transform: translateY(-1px); box-shadow: var(--shadow-subtle); background: rgba(14,26,47,.08); border-color: rgba(14,26,47,.14); }
+    .btn-secondary:active{ transform: translateY(0px) scale(.99); }
+
+    .results{
+      margin-top: 14px;
+    }
+    .result-card{
+      background: rgba(255,255,255,.88);
+      border: 1px solid rgba(14,26,47,.10);
+      border-radius: 22px;
+      box-shadow: var(--shadow-subtle);
+      overflow:hidden;
+    }
+    .result-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      padding: 14px 14px;
+      border-bottom: 1px solid rgba(14,26,47,.08);
+    }
+    .result-title{
+      font-family: var(--font-display);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      font-size: 18px;
+      line-height:1;
+      color: var(--navy-900);
+      margin:0;
+    }
+    .result-sub{
+      margin: 6px 0 0;
+      font-size: 12px;
+      line-height:1.35;
+      color: var(--ink-500);
+    }
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(31,122,80,.10);
+      border: 1px solid rgba(31,122,80,.20);
+      color: #165a3a;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .tag[data-kind="warning"]{
+      background: rgba(194,121,20,.10);
+      border-color: rgba(194,121,20,.22);
+      color: #925a10;
+    }
+    .tag[data-kind="error"]{
+      background: rgba(180,47,47,.10);
+      border-color: rgba(180,47,47,.20);
+      color: #8b2525;
+    }
+    .result-body{
+      padding: 12px 14px 14px;
+    }
+    .group{
+      margin-top: 10px;
+    }
+    .group:first-child{ margin-top:0; }
+    .group-title{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom: 8px;
+    }
+    .group-title-main{
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      font-size: 13px;
+      color: var(--navy-900);
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .group-title-hint{
+      font-size: 12px;
+      color: var(--ink-400);
+    }
+    .list{
+      margin:0;
+      padding:0;
+      list-style:none;
+      border-radius: 18px;
+      border: 1px solid rgba(14,26,47,.10);
+      background: rgba(250,245,236,.46);
+      overflow:hidden;
+    }
+    .item{
+      padding: 11px 12px;
+      border-bottom: 1px solid rgba(14,26,47,.08);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      font-size: 13px;
+      line-height:1.25;
+      color: var(--ink-900);
+    }
+    .item:last-child{ border-bottom:none; }
+    .item-left{
+      min-width:0;
+    }
+    .item-name{
+      font-weight: 750;
+      letter-spacing: -0.01em;
+      color: var(--navy-900);
+    }
+    .item-note{
+      margin-top: 3px;
+      color: var(--ink-500);
+      font-size: 12px;
+      line-height:1.3;
+    }
+    .item-pill{
+      flex:0 0 auto;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--ink-400);
+      padding: 6px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(14,26,47,.10);
+      user-select:none;
+    }
+
+    .recipe-list{
+      margin:0;
+      padding:0;
+      list-style:none;
+      display:grid;
+      gap:10px;
+    }
+    .recipe-item{
+      border-radius: 20px;
+      border: 1px solid rgba(14,26,47,.10);
+      background: rgba(250,245,236,.55);
+      overflow:hidden;
+      cursor:pointer;
+      transition: transform .18s var(--ease-out), box-shadow .18s var(--ease-out), border-color .18s var(--ease-out), background .18s var(--ease-out);
+    }
+    .recipe-item:hover{
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-subtle);
+      border-color: rgba(14,26,47,.14);
+      background: rgba(250,245,236,.78);
+    }
+    .recipe-item:active{ transform: translateY(0px) scale(.99); }
+    .recipe-top{
+      padding: 12px 12px 10px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      border-bottom: 1px solid rgba(14,26,47,.08);
+    }
+    .recipe-name{
+      font-family: var(--font-display);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      font-size: 16px;
+      line-height: 1.02;
+      color: var(--navy-900);
+      margin:0;
+    }
+    .recipe-meta{
+      margin: 6px 0 0;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+    }
+    .mini{
+      font-size: 11px;
+      color: var(--ink-400);
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.70);
+      border: 1px solid rgba(14,26,47,.08);
+      user-select:none;
+    }
+    .score{
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 900;
+      color: rgba(14,26,47,.72);
+      padding: 7px 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.75);
+      border: 1px solid rgba(14,26,47,.10);
+      user-select:none;
+      white-space:nowrap;
+    }
+    .recipe-bottom{
+      padding: 10px 12px 12px;
+    }
+    .recipe-sub{
+      font-size: 12px;
+      line-height:1.35;
+      color: var(--ink-500);
+      margin:0;
+    }
+    .recipe-tags{
+      margin-top: 8px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+    }
+    .tag-mini{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      background: rgba(14,26,47,.06);
+      border: 1px solid rgba(14,26,47,.08);
+      color: var(--navy-700);
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: -0.01em;
+      user-select:none;
+    }
+
+    .camera{
+      border-radius: 22px;
+      border: 1px dashed rgba(14,26,47,.22);
+      background:
+        radial-gradient(240px 140px at 50% 20%, rgba(255,255,255,.92), rgba(250,245,236,.55) 60%, rgba(240,99,28,.06)),
+        rgba(250,245,236,.35);
+      overflow:hidden;
+      min-height: 210px;
+      display:flex;
+      flex-direction:column;
+      align-items:stretch;
+      justify-content:stretch;
+    }
+    .camera video{
+      width:100%;
+      height: 220px;
+      object-fit:cover;
+      display:block;
+      background: rgba(14,26,47,.92);
+    }
+    .camera canvas{ display:none; }
+    .camera-empty{
+      min-height: 210px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      padding: 14px 14px;
+      gap:10px;
+      text-align:center;
+    }
+    .camera-icon{
+      width: 54px;
+      height: 54px;
+      border-radius: 22px;
+      display:grid;
+      place-items:center;
+      background: rgba(255,255,255,.85);
+      border: 1px solid rgba(14,26,47,.10);
+      box-shadow: var(--shadow-subtle);
+    }
+    .camera-title{
+      font-family: var(--font-display);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      font-size: 16px;
+      color: var(--navy-900);
+      margin:0;
+    }
+    .camera-sub{
+      margin:0;
+      font-size: 12px;
+      line-height:1.35;
+      color: var(--ink-500);
+      max-width: 360px;
+    }
+    .camera-actions{
+      margin-top: 4px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      justify-content:center;
+    }
+    .camera-live{
+      position:relative;
+    }
+    .camera-controls{
+      padding: 12px 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border-top: 1px solid rgba(14,26,47,.08);
+      background: rgba(250,245,236,.65);
+    }
+    .dot{
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--red);
+      box-shadow: 0 0 0 4px rgba(180,47,47,.14);
+    }
+    .dot[data-idle="true"]{
+      background: var(--ink-200);
+      box-shadow: none;
+    }
+    .status{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size: 12px;
+      color: var(--ink-500);
+      user-select:none;
+    }
+    .status strong{
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--navy-800);
+    }
+
+    .divider{
+      height:1px;
+      margin: 10px 2px;
+      background: rgba(14,26,47,.10);
+    }
+
+    .bottom-nav{
+      position:absolute;
+      left:12px;
+      right:12px;
+      bottom: 14px;
+      border-radius: 22px;
+      background: rgba(14,26,47,.96);
+      box-shadow: var(--shadow-floating);
+      border: 1px solid rgba(255,255,255,.10);
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:6px;
+      padding: 8px 8px;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+    }
+    .nav-item{
+      position:relative;
+      border-radius: 18px;
+      padding: 10px 10px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      cursor:pointer;
+      user-select:none;
+      overflow:hidden;
+      transition: transform .18s var(--ease-out);
+    }
+    .nav-item:before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(110px 60px at 50% 15%, rgba(255,255,255,.20), transparent 60%);
+      opacity:0;
+      transition: opacity .24s var(--ease-out);
+      pointer-events:none;
+    }
+    .nav-item:hover{ transform: translateY(-1px); }
+    .nav-item:active{ transform: translateY(0px) scale(.99); }
+    .nav-item[data-active="true"]{
+      background: rgba(240,99,28,.18);
+    }
+    .nav-item[data-active="true"]:before{ opacity:1; }
+    .nav-icon{
+      width: 34px;
+      height: 34px;
+      border-radius: 16px;
+      display:grid;
+      place-items:center;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.10);
+      position:relative;
+      z-index:1;
+    }
+    .nav-item[data-active="true"] .nav-icon{
+      background: rgba(255,255,255,.16);
+      border-color: rgba(255,255,255,.18);
+      box-shadow: 0 16px 36px rgba(0,0,0,.28);
+    }
+    .nav-label{
+      position:relative;
+      z-index:1;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: rgba(255,255,255,.70);
+    }
+    .nav-item[data-active="true"] .nav-label{
+      color: rgba(255,255,255,.92);
+    }
+
+    .spinner{
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      border: 2px solid rgba(255,255,255,.35);
+      border-top-color: rgba(255,255,255,.98);
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin{
+      to{ transform: rotate(360deg); }
+    }
+
+    .sr-only{
+      position:absolute;
+      width:1px;
+      height:1px;
+      padding:0;
+      margin:-1px;
+      overflow:hidden;
+      clip:rect(0,0,0,0);
+      white-space:nowrap;
+      border:0;
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+  const { useState, useEffect, useRef, useCallback, useMemo } = React;
+
+  // Icons (pure SVG render functions, not JSX elements)
+  const I = {
+    ChefHat: ({ size=20, stroke="currentColor" }) => `
+      <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/>
+        <line x1="6" y1="17" x2="18" y2="17"/>
+      </svg>`,
+    Transform: ({ size=20, stroke="currentColor" }) => `
+      <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22c4.97 0 9-4.03 9-9-4.97 0-9 4.03-9 9Z"/>
+        <path d="M12 2C6.5 2 2 6.5 2 12c5.5 0 10-4.5 10-10Z"/>
+      </svg>`,
+    Refrigerator: ({ size=20, stroke="currentColor" }) => `
+      <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 6a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6Z"/>
+        <path d="M5 10h14"/>
+        <path d="M15 7v2"/>
+      </svg>`,
+    Camera: ({ size=20, stroke="currentColor" }) => `
+      <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+        <circle cx="12" cy="13" r="3"/>
+      </svg>`,
+    Refresh: ({ size=20, stroke="currentColor" }) => `
+      <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+        <path d="M21 3v5h-5"/>
+        <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+        <path d="M3 21v-5h5"/>
+      </svg>`,
+    Sparkles: ({ size=20, stroke="currentColor" }) => `
+      <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+        <path d="M5 3v4"/>
+        <path d="M3 5h4"/>
+        <path d="M19 17v4"/>
+        <path d="M17 19h4"/>
+      </svg>`,
+    Clock: ({ size=20, stroke="currentColor" }) => `
+      <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>`,
+    Flame: ({ size=20, stroke="currentColor" }) => `
+      <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+      </svg>`,
+    Check: ({ size=16, stroke="currentColor" }) => `
+      <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>`,
+    Info: ({ size=16, stroke="currentColor" }) => `
+      <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="16" x2="12" y2="12"/>
+        <line x1="12" y1="8" x2="12.01" y2="8"/>
+      </svg>`,
+    ScanLine: ({ size=20, stroke="currentColor" }) => `
+      <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+        <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+        <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+        <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+        <line x1="7" y1="12" x2="17" y2="12"/>
+      </svg>`,
+    Upload: ({ size=20, stroke="currentColor" }) => `
+      <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>`,
+  };
+
+  // Icon wrapper (renders SVG string as HTML)
+  const Icon = ({ name, size=20, stroke="currentColor", className="" }) => {
+    const svg = I[name]?.({ size, stroke }) || "";
+    return <span className={className} dangerouslySetInnerHTML={{ __html: svg }} />;
+  };
+
+  // Data: sample recipes (kept logic lightweight, no dependency on external files)
+  const sampleRecipes = [
+    {
+      id: "r1",
+      name: "Creamy Garlic Butter Shrimp",
+      timeMinutes: 22,
+      difficulty: "easy",
+      cuisine: "American",
+      ingredients: [
+        { name: "shrimp", amount: "1 lb", category: "seafood" },
+        { name: "butter", amount: "3 tbsp", category: "dairy" },
+        { name: "garlic", amount: "4 cloves", category: "vegetable" },
+        { name: "parsley", amount: "2 tbsp", category: "herb" },
+        { name: "lemon juice", amount: "1 tbsp", category: "pantry" },
+        { name: "heavy cream", amount: "1/4 cup", category: "dairy" },
+        { name: "parmesan cheese", amount: "1/4 cup", category: "dairy" },
+        { name: "salt", amount: "to taste", category: "pantry" },
+        { name: "black pepper", amount: "to taste", category: "pantry" },
+      ],
+      instructions: [
+        "Pat shrimp dry and season lightly with salt and pepper.",
+        "Heat butter in a large skillet over medium-high heat.",
+        "Add shrimp in a single layer and sear 1–2 minutes per side until pink. Remove to a plate.",
+        "Add garlic to the pan and sauté 30 seconds until fragrant.",
+        "Pour in lemon juice and heavy cream; simmer gently 2 minutes.",
+        "Stir in parmesan until melted and sauce is creamy.",
+        "Return shrimp to the pan; toss with sauce and parsley.",
+        "Taste and adjust seasoning. Serve immediately."
+      ],
+      tags: ["quick", "one-pan", "seafood", "dinner"]
+    },
+    {
+      id: "r2",
+      name: "Spicy Basil Chicken Stir-Fry",
+      timeMinutes: 28,
+      difficulty: "easy",
+      cuisine: "Thai",
+      ingredients: [
+        { name: "chicken breast", amount: "1 lb", category: "meat" },
+        { name: "soy sauce", amount: "3 tbsp", category: "pantry" },
+        { name: "oyster sauce", amount: "2 tbsp", category: "pantry" },
+        { name: "fish sauce", amount: "1 tbsp", category: "pantry" },
+        { name: "garlic", amount: "6 cloves", category: "vegetable" },
+        { name: "chili peppers", amount: "2", category: "vegetable" },
+        { name: "bell pepper", amount: "1", category: "vegetable" },
+        { name: "onion", amount: "1 small", category: "vegetable" },
+        { name: "basil leaves", amount: "2 cups", category: "herb" },
+        { name: "vegetable oil", amount: "2 tbsp", category: "pantry" },
+      ],
+      instructions: [
+        "Slice chicken into bite-sized pieces. Mix with 1 tbsp soy sauce and 1 tbsp oyster sauce; marinate 10 minutes.",
+        "Mix remaining soy sauce, oyster sauce, and fish sauce in a small bowl. Set aside.",
+        "Heat oil in a wok or large skillet over high heat.",
+        "Add garlic and chilies; stir-fry 20 seconds until fragrant.",
+        "Add chicken and stir-fry 4–5 minutes until cooked through and lightly browned.",
+        "Add onion and bell pepper; stir-fry 2–3 minutes until crisp-tender.",
+        "Pour in sauce; toss to coat everything evenly.",
+        "Add basil and stir until just wilted. Serve with rice."
+      ],
+      tags: ["spicy", "asian", "quick", "weeknight"]
+    },
+    {
+      id: "r3",
+      name: "Cacio e Pepe",
+      timeMinutes: 18,
+      difficulty: "medium",
+      cuisine: "Italian",
+      ingredients: [
+        { name: "spaghetti", amount: "12 oz", category: "pantry" },
+        { name: "pecorino romano", amount: "1 cup", category: "dairy" },
+        { name: "black pepper", amount: "1 tbsp", category: "pantry" },
+        { name: "salt", amount: "to taste", category: "pantry" },
+        { name: "butter", amount: "2 tbsp", category: "dairy" },
+      ],
+      instructions: [
+        "Bring a large pot of heavily salted water to a boil.",
+        "Toast pepper in a dry pan over medium heat 1 minute until fragrant. Crack coarsely.",
+        "Cook pasta 1 minute less than package directions (it will finish in the pan).",
+        "Reserve 1 cup pasta water, then drain pasta.",
+        "Melt butter in a large skillet over medium heat.",
+        "Add 1/2 cup pasta water and bring to a simmer.",
+        "Add pasta and toss vigorously.",
+        "Turn off heat. Add pecorino and most of the pepper; toss rapidly to create an emulsion, adding pasta water a splash at a time.",
+        "Season with salt if needed. Top with remaining pepper. Serve immediately."
+      ],
+      tags: ["pasta", "italian", "vegetarian", "quick"]
+    },
+    {
+      id: "r4",
+      name: "Crispy Veggie Fried Rice",
+      timeMinutes: 24,
+      difficulty: "easy",
+      cuisine: "Asian",
+      ingredients: [
+        { name: "cooked rice", amount: "4 cups", category: "pantry" },
+        { name: "eggs", amount: "2", category: "protein" },
+        { name: "carrots", amount: "1 cup diced", category: "vegetable" },
+        { name: "peas", amount: "1 cup", category: "vegetable" },
+        { name: "corn", amount: "1 cup", category: "vegetable" },
+        { name: "onion", amount: "1 small", category: "vegetable" },
+        { name: "garlic", amount: "3 cloves", category: "vegetable" },
+        { name: "soy sauce", amount: "3 tbsp", category: "pantry" },
+        { name: "sesame oil", amount: "1 tbsp", category: "pantry" },
+        { name: "vegetable oil", amount: "2 tbsp", category: "pantry" },
+        { name: "green onions", amount: "3", category: "vegetable" },
+      ],
+      instructions: [
+        "Beat eggs with a pinch of salt. Heat 1 tbsp oil in a large skillet over medium heat; scramble eggs until just set. Remove to a plate.",
+        "Add remaining oil to the pan. Increase heat to medium-high.",
+        "Add onion and sauté 2 minutes until softened.",
+        "Add garlic and sauté 30 seconds until fragrant.",
+        "Add carrots, peas, and corn; stir-fry 3–4 minutes until crisp-tender.",
+        "Add rice and use a spatula to break up clumps. Spread in a single layer and let crisp 1–2 minutes.",
+        "Drizzle with soy sauce and sesame oil; toss to coat.",
+        "Return eggs to the pan. Add green onions; toss everything together.",
+        "Taste and add more soy sauce if desired. Serve hot."
+      ],
+      tags: ["vegetarian", "rice", "quick", "weeknight"]
+    }
+  ];
+
+  // Lightweight kitchen NLP (mimics original lib behavior for demo)
+  const normalizeToken = (t) => t.toLowerCase().trim();
+
+  const matchIngredient = (needle, hay) => {
+    const n = normalizeToken(needle);
+    const h = normalizeToken(hay);
+    if (!n || !h) return 0;
+    if (n === h) return 1;
+    if (h.includes(n)) return 0.85;
+    if (n.includes(h)) return 0.75;
+    const tokens = n.split(/\s+/).filter(Boolean);
+    const hits = tokens.filter(t => h.includes(t)).length;
+    if (hits === 0) return 0;
+    return Math.min(0.65, 0.35 + (hits / Math.max(tokens.length, 1)) * 0.30);
+  };
+
+  const parseIngredientsText = (text) => {
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    const parsed = lines.map((line, idx) => {
+      const m = line.match(/^(.+?)\s*[-:|]\s*(.+)$/);
+      if (m) {
+        return { name: m[1].trim(), amount: m[2].trim(), originalIndex: idx };
+      }
+      return { name: line, amount: "", originalIndex: idx };
+    });
+    return parsed;
+  };
+
+  const analyzeIngredients = (ingredients, recipes) => {
+    const pairs = [];
+    for (const r of recipes) {
+      const haveNames = ingredients.map(x => x.name);
+      const required = r.ingredients.map(x => x.name);
+
+      const hits = [];
+      const misses = [];
+
+      for (const req of required) {
+        const scored = haveNames.map(have => ({ have, score: matchIngredient(req, have) }));
+        const best = scored.reduce((a, b) => b.score > a.score ? b : a, { have: "", score: 0 });
+        if (best.score > 0.45) {
+          hits.push({ required: req, matched: best.have, score: best.score });
+        } else {
+          misses.push({ required: req, hint: "Consider alternatives if missing" });
+        }
+      }
+
+      const coverage = required.length ? Math.min(1, hits.length / required.length) : 0;
+      const avgScore = hits.length ? hits.reduce((s, x) => s + x.score, 0) / hits.length : 0;
+      const score = coverage * 0.65 + avgScore * 0.35;
+
+      pairs.push({
+        recipe: r,
+        score,
+        coverage,
+        avgScore,
+        hits,
+        misses,
+        totalRequired: required.length,
+        totalHave: haveNames.length,
+      });
+    }
+
+    pairs.sort((a, b) => b.score - a.score);
+    return pairs;
+  };
+
+  // Transformation rules (kept lightweight, mimics lib)
+  const transformRules = [
+    {
+      from: "classic",
+      to: "vegetarian",
+      title: "Vegetarian Makeover",
+      desc: "Swap animal proteins for plant-powered alternatives.",
+      substitutions: [
+        { pattern: /chicken|beef|pork|bacon|sausage|turkey|lamb/i, replacer: (m) => `firm tofu (instead of ${m})` },
+        { pattern: /shrimp|prawn|fish|seafood|salmon|tuna|cod/i, replacer: (m) => `heart of palm or oyster mushrooms (instead of ${m})` },
+        { pattern: /chicken broth|beef broth|chicken stock|beef stock/i, replacer: (m) => `vegetable broth (instead of ${m})` },
+        { pattern: /\b(heavy )?cream\b/i, replacer: (m) => `coconut cream (instead of ${m})` },
+      ]
+    },
+    {
+      from: "classic",
+      to: "quick",
+      title: "30-Minute Tune-Up",
+      desc: "Optimize for speed with quick-cooking techniques and shortcuts.",
+      substitutions: [
+        { pattern: /sauté|simmer|braise|roast/i, replacer: (m) => `stir-fry (quick high-heat ${m})` },
+        { pattern: /marinate.*?(\d+\s*(hour|hr|min|minute))/gi, replacer: (m) => `quick toss (skip marinating)` },
+        { pattern: /\bonion\b/i, replacer: (m) => `pre-chopped onion` },
+        { pattern: /\bgarlic\b/i, replacer: (m) => `minced garlic (jarred is fine)` },
+      ]
+    },
+    {
+      from: "classic",
+      to: "healthy",
+      title: "Healthier Twist",
+      desc: "Reduce saturated fat and refined carbs where it makes sense.",
+      substitutions: [
+        { pattern: /\bbutter\b/i, replacer: (m) => `olive oil or avocado oil (instead of butter)` },
+        { pattern: /\b(heavy )?cream\b/i, replacer: (m) => `cashew cream or evaporated skim milk` },
+        { pattern: /white rice|white bread|white pasta/i, replacer: (m) => `${m.replace(/white/gi,'').trim()} (brown or whole-grain)` },
+        { pattern: /fry|fried/i, replacer: (m) => `pan-sear or air-fry` },
+      ]
+    }
+  ];
+
+  const transformRecipe = (recipe, targetStyle) => {
+    const rule = transformRules.find(r => r.to === targetStyle);
+    if (!rule) {
+      return {
+        title: recipe.name,
+        style: targetStyle,
+        headline: `${recipe.name}`,
+        subhead: `Ready in ${recipe.timeMinutes} minutes`,
+        summary: "Keep the original recipe unchanged.",
+        originalIngredients: [...recipe.ingredients],
+        transformedIngredients: recipe.ingredients.map(i => ({ ...i, note: "Keep as original." })),
+        steps: recipe.instructions.map((text, idx) => ({ index: idx+1, text, tip: null })),
+        tips: [
+          "Taste and adjust seasoning before serving.",
+          "Prep ingredients ahead for a smoother workflow."
+        ]
+      };
+    }
+
+    const applySubs = (text) => {
+      let out = text;
+      for (const sub of rule.substitutions) {
+        out = out.replace(sub.pattern, (m) => {
+          const r = typeof sub.replacer === "function" ? sub.replacer(m) : sub.replacer;
+          return r;
+        });
+      }
+      return out;
+    };
+
+    const transformedIngredients = recipe.ingredients.map(i => {
+      const nextName = applySubs(i.name);
+      const changed = nextName !== i.name;
+      return {
+        ...i,
+        name: nextName,
+        note: changed ? `Prefer ${nextName} for a ${rule.to} style.` : "Keep as original."
+      };
+    });
+
+    const steps = recipe.instructions.map((text, idx) => {
+      const next = applySubs(text);
+      const changed = next !== text;
+      return {
+        index: idx+1,
+        text: next,
+        tip: changed ? "Adjust technique to match the lighter, quicker, or plant-based style." : null
+      };
+    });
+
+    return {
+      title: recipe.name,
+      style: targetStyle,
+      headline: `${rule.title}: ${recipe.name}`,
+      subhead: rule.desc,
+      summary: `${recipe.name} optimized for ${targetStyle} cooking.`,
+      originalIngredients: [...recipe.ingredients],
+      transformedIngredients,
+      steps,
+      tips: [
+        "Taste and adjust seasoning before serving.",
+        "Prep ingredients ahead for a smoother workflow.",
+        "Use the best-quality ingredients you can for the biggest upgrade."
+      ]
+    };
+  };
+
+  // Scanner (lightweight OCR-like parser for demo; real app would use Tesseract/Web API)
+  const scanLikeOCR = (text) => {
+    if (!text || !text.trim()) return null;
+
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    const titleLine = lines[0] || "Scanned Item";
+
+    const keywords = {
+      allergens: ["nuts", "peanuts", "dairy", "milk", "egg", "soy", "wheat", "gluten", "fish", "shellfish", "sesame"],
+      additives: ["monosodium", "glutamate", "nitrate", "nitrite", "sulfite", "high fructose", "artificial"],
+      positives: ["whole grain", "organic", "no added", "low sodium", "high fiber", "protein", "vitamin", "mineral"]
+    };
+
+    const lower = text.toLowerCase();
+
+    const foundAllergens = keywords.allergens.filter(k => lower.includes(k));
+    const foundAdditives = keywords.additives.filter(k => lower.includes(k));
+    const foundPositives = keywords.positives.filter(k => lower.includes(k));
+
+    const flags = [];
+    if (foundAllergens.length) flags.push("allergens");
+    if (foundAdditives.length) flags.push("additives");
+
+    let sentiment = "neutral";
+    if (foundPositives.length > 1 && !foundAdditives.length && foundAllergens.length === 0) sentiment = "positive";
+    if (foundAdditives.length || foundAllergens.length >= 2) sentiment = "warning";
+
+    // Simple "ingredients" from nouns (very lightweight)
+    const tokens = lower
+      .replace(/[^a-z\s]/g, " ")
+      .split(/\s+/)
+      .filter(Boolean)
+      .filter(t => t.length > 2);
+
+    const topIngredients = [...new Set(tokens)].slice(0, 12).map(name => ({ name, note: "Detected from scan" }));
+
+    return {
+      title: titleLine.slice(0, 80),
+      summary: sentiment === "positive"
+        ? "This product looks relatively clean with beneficial markers."
+        : sentiment === "warning"
+        ? "Note potential allergens or additives; use your best judgment."
+        : "Quick scan done. Review the list and decide based on your preferences.",
+      sentiment,
+      topIngredients,
+      allergens: foundAllergens,
+      additives: foundAdditives,
+      positives: foundPositives,
+      fullText: text
+    };
+  };
+
+  // Components
+  const BottomNav = ({ mode, onMode }) => {
+    const items = [
+      { id: "transform", label: "Transform", icon: "Transform" },
+      { id: "fridge", label: "Fridge", icon: "Refrigerator" },
+      { id: "scanner", label: "Scanner", icon: "Camera" },
+    ];
+    return (
+      <nav className="bottom-nav" aria-label="Chef tool modes">
+        {items.map(it => (
+          <button
+            key={it.id}
+            type="button"
+            className="nav-item"
+            data-active={mode === it.id}
+            onClick={() => onMode(it.id)}
+            aria-label={`Switch to ${it.label} mode`}
+            aria-current={mode === it.id ? "page" : undefined}
+          >
+            <span className="nav-icon" aria-hidden="true">
+              <Icon name={it.icon} size={20} stroke="rgba(255,255,255,.90)" />
+            </span>
+            <span className="nav-label">{it.label}</span>
+          </button>
+        ))}
+      </nav>
+    );
+  };
+
+  const Hero = ({ mode }) => {
+    const copy = {
+      transform: {
+        kicker: "Transform mode",
+        title: "Reshape any recipe into something new.",
+        subtitle: "Paste a recipe and turn it vegetarian, quick, or healthier in one tap."
+      },
+      fridge: {
+        kicker: "Fridge Raid mode",
+        title: "What can you make right now?",
+        subtitle: "List the ingredients you have and we'll rank your best options."
+      },
+      scanner: {
+        kicker: "Scanner mode",
+        title: "Point, scan, and decide what to eat.",
+        subtitle: "Snap food labels to quickly spot allergens, additives, and cleaner options."
+      }
+    };
+    const c = copy[mode] || copy.transform;
+    return (
+      <section className="hero">
+        <div className="kicker" aria-label="Current mode">
+          <Icon name="Sparkles" size={14} stroke="var(--navy-700)" />
+          {c.kicker}
+        </div>
+        <h1 className="hero-title">{c.title}</h1>
+        <p className="hero-sub">{c.subtitle}</p>
+      </section>
+    );
+  };
+
+  const ModeTabs = ({ mode, onMode }) => {
+    const tabs = [
+      { id: "transform", title: "Transform", subtitle: "Rewrite any recipe", icon: "Transform" },
+      { id: "fridge", title: "Fridge Raid", subtitle: "Cook from what you have", icon: "Refrigerator" },
+      { id: "scanner", title: "Scanner", subtitle: "Read food labels fast", icon: "Camera" },
+    ];
+    return (
+      <div className="mode-tabs" role="tablist" aria-label="Chef tool modes">
+        {tabs.map(t => (
+          <button
+            key={t.id}
+            type="button"
+            role="tab"
+            aria-selected={mode === t.id}
+            className="mode-tab"
+            data-active={mode === t.id}
+            onClick={() => onMode(t.id)}
+          >
+            <span className="mode-icon" aria-hidden="true">
+              <Icon name={t.icon} size={18} stroke="var(--navy-700)" />
+            </span>
+            <div>
+              <div className="mode-title">{t.title}</div>
+              <div className="mode-sub">{t.subtitle}</div>
+            </div>
+          </button>
+        ))}
+      </div>
+    );
+  };
+
+  // Transform mode
+  const TransformPanel = () => {
+    const [text, setText] = useState("");
+    const [style, setStyle] = useState("vegetarian");
+    const [result, setResult] = useState(null);
+    const [working, setWorking] = useState(false);
+
+    const recipeOptions = useMemo(() => sampleRecipes.map(r => ({ value: r.id, label: r.name })), []);
+    const styleOptions = [
+      { value: "classic", label: "Keep as-is" },
+      { value: "vegetarian", label: "Vegetarian" },
+      { value: "quick", label: "Quick (30-min)" },
+      { value: "healthy", label: "Healthier" },
+    ];
+
+    const handlePasteExample = useCallback((recipeId) => {
+      const r = sampleRecipes.find(x => x.id === recipeId);
+      if (!r) return;
+      const bullets = r.ingredients.map(i => `- ${i.name}: ${i.amount}`).join("\n");
+      const steps = r.instructions.map((s, idx) => `${idx+1}. ${s}`).join("\n");
+      setText(`# ${r.name}\n\nIngredients:\n${bullets}\n\nInstructions:\n${steps}`);
+      setResult(null);
+    }, []);
+
+    const handleTransform = useCallback(() => {
+      if (!text.trim()) return;
+      setWorking(true);
+      setTimeout(() => {
+        const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+        const title = lines[0] ? lines[0].replace(/^#+\s*/, "") : "Untitled Recipe";
+
+        const ingredients = parseIngredientsText(
+          text.replace(/^.*?(ingredients|components)[\s\S]*?(instructions|steps|directions|method|$)/gi, (m) => {
+            // Keep only lines that look like ingredients (heuristic)
+            const inner = m.replace(/ingredients|components|instructions|steps|directions|method/gi, "").trim();
+            return inner;
+          })
+        );
+
+        const fakeRecipe = {
+          id: "user-pasted",
+          name: title.slice(0, 120),
+          timeMinutes: 30,
+          difficulty: "medium",
+          cuisine: "Custom",
+          ingredients: ingredients.length ? ingredients : [
+            { name: "ingredient A", amount: "1 cup", category: "misc" },
+            { name: "ingredient B", amount: "2 tbsp", category: "misc" },
+          ],
+          instructions: text.split(/\r?\n/).map(l => l.trim()).filter(Boolean).slice(0, 12),
+          tags: ["custom"]
+        };
+
+        const out = transformRecipe(fakeRecipe, style);
+        setResult(out);
+        setWorking(false);
+      }, 620);
+    }, [text, style]);
+
+    return (
+      <section className="panel" aria-label="Transform mode controls">
+        <div className="card">
+          <div className="card-section">
+            <div className="label-row">
+              <label className="label" htmlFor="transform-recipe-text">
+                <Icon name="Sparkles" size={14} stroke="var(--navy-700)" />
+                Paste a recipe
+              </label>
+              <span className="hint">Or use an example below</span>
+            </div>
+            <textarea
+              id="transform-recipe-text"
+              className="input"
+              placeholder="Paste any recipe (ingredients + instructions) from anywhere..."
+              value={text}
+              onChange={(e) => { setText(e.target.value); setResult(null); }}
+              aria-describedby="transform-hint"
+            />
+            <div className="chips" id="transform-hint">
+              {recipeOptions.map(opt => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  className="chip"
+                  data-selected={text.includes(opt.label)}
+                  onClick={() => handlePasteExample(opt.value)}
+                >
+                  <Icon name="ChefHat" size={12} stroke="var(--navy-700)" />
+                  Example: {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="card-section">
+            <div className="label-row">
+              <div className="label">
+                <Icon name="Transform" size={14} stroke="var(--navy-700)" />
+                Cooking style
+              </div>
+              <span className="hint">Preview how it changes</span>
+            </div>
+            <div className="row">
+              <div className="field">
+                <select
+                  className="select"
+                  value={style}
+                  onChange={(e) => { setStyle(e.target.value); setResult(null); }}
+                  aria-label="Select transformation style"
+                >
+                  {styleOptions.map(o => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div className="card-section">
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={handleTransform}
+              disabled={working || !text.trim()}
+              aria-label="Transform recipe"
+            >
+              {working ? <span className="spinner" aria-hidden="true" /> : <Icon name="Sparkles" size={18} stroke="rgba(255,255,255,.95)" />}
+              <span className="btn-text">{working ? "Transforming…" : "Transform recipe"}</span>
+            </button>
+          </div>
+        </div>
+
+        {result && (
+          <div className="results" aria-live="polite">
+            <div className="result-card">
+              <div className="result-head">
+                <div>
+                  <h2 className="result-title">{result.headline}</h2>
+                  <p className="result-sub">{result.subhead}</p>
+                </div>
+                <span className="tag" data-kind={style === "classic" ? "warning" : undefined}>
+                  <Icon name="Check" size={12} stroke={style === "classic" ? "#925a10" : "#165a3a"} />
+                  Style: {style}
+                </span>
+              </div>
+
+              <div className="result-body">
+                <div className="group">
+                  <div className="group-title">
+                    <div className="group-title-main">
+                      <Icon name="Info" size={14} stroke="var(--navy-700)" />
+                      Summary
+                    </div>
+                    <span className="group-title-hint">At a glance</span>
+                  </div>
+                  <div className="list">
+                    <div className="item">
+                      <div className="item-left">
+                        <div className="item-name">{result.title}</div>
+                        <div className="item-note">{result.summary}</div>
+                      </div>
+                      <div className="item-pill">{result.style}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="group">
+                  <div className="group-title">
+                    <div className="group-title-main">
+                      <Icon name="Transform" size={14} stroke="var(--navy-700)" />
+                      Ingredients (transformed)
+                    </div>
+                    <span className="group-title-hint">{result.transformedIngredients.length} items</span>
+                  </div>
+                  <ol className="list">
+                    {result.transformedIngredients.map((i, idx) => (
+                      <li key={idx} className="item">
+                        <div className="item-left">
+                          <div className="item-name">{i.name}{i.amount ? ` · ${i.amount}` : ""}</div>
+                          <div className="item-note">{i.note}</div>
+                        </div>
+                        <div className="item-pill">#{idx+1}</div>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+
+                <div className="group">
+                  <div className="group-title">
+                    <div className="group-title-main">
+                      <Icon name="Clock" size={14} stroke="var(--navy-700)" />
+                      Steps
+                    </div>
+                    <span className="group-title-hint">{result.steps.length} steps</span>
+                  </div>
+                  <ol className="list">
+                    {result.steps.map((s) => (
+                      <li key={s.index} className="item">
+                        <div className="item-left">
+                          <div className="item-name">Step {s.index}</div>
+                          <div className="item-note">{s.text}</div>
+                          {s.tip && <div className="item-note" style={{color:"var(--ink-600)"}}>Tip: {s.tip}</div>}
+                        </div>
+                        <div className="item-pill">{s.index}</div>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+
+                <div className="group">
+                  <div className="group-title">
+                    <div className="group-title-main">
+                      <Icon name="Sparkles" size={14} stroke="var(--navy-700)" />
+                      Pro tips
+                    </div>
+                    <span className="group-title-hint">Make it better</span>
+                  </div>
+                  <ul className="list">
+                    {result.tips.map((t, idx) => (
+                      <li key={idx} className="item">
+                        <div className="item-left">
+                          <div className="item-name">Tip {idx+1}</div>
+                          <div className="item-note">{t}</div>
+                        </div>
+                        <div className="item-pill">+</div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+    );
+  };
+
+  // Fridge Raid mode
+  const FridgePanel = () => {
+    const [text, setText] = useState("");
+    const [topN, setTopN] = useState(6);
+    const [result, setResult] = useState(null);
+    const [working, setWorking] = useState(false);
+
+    const quickInputs = [
+      "chicken breast\nsoy sauce\ngarlic\nonion\nbell pepper\nbasil leaves\nrice",
+      "shrimp\nbutter\ngarlic\nparsley\nlemon\nheavy cream\nparmesan\npasta",
+      "eggs\ncooked rice\ncarrots\npeas\ncorn\nonion\ngarlic\nsoy sauce\ngreen onions",
+      "spaghetti\npecorino romano\nblack pepper\nbutter"
+    ];
+
+    const handleQuickFill = useCallback((index) => {
+      setText(quickInputs[index] || "");
+      setResult(null);
+    }, [quickInputs]);
+
+    const handleSearch = useCallback(() => {
+      if (!text.trim()) return;
+      setWorking(true);
+      setTimeout(() => {
+        const ingredients = parseIngredientsText(text);
+        const pairs = analyzeIngredients(ingredients, sampleRecipes);
+        const top = pairs.slice(0, topN);
+        setResult({
+          query: text,
+          ingredients,
+          topRecipes: top,
+          timestamp: Date.now()
+        });
+        setWorking(false);
+      }, 620);
+    }, [text, topN]);
+
+    return (
+      <section className="panel" aria-label="Fridge Raid mode controls">
+        <div className="card">
+          <div className="card-section">
+            <div className="label-row">
+              <label className="label" htmlFor="fridge-ingredients">
+                <Icon name="Refrigerator" size={14} stroke="var(--navy-700)" />
+                What do you have?
+              </label>
+              <span className="hint">One ingredient per line</span>
+            </div>
+            <textarea
+              id="fridge-ingredients"
+              className="input"
+              placeholder="List the ingredients you have (one per line):&#10;&#10;chicken breast&#10;soy sauce&#10;garlic&#10;onion&#10;rice"
+              value={text}
+              onChange={(e) => { setText(e.target.value); setResult(null); }}
+              aria-describedby="fridge-hints"
+            />
+            <div className="chips" id="fridge-hints">
+              {["Stir-fry kit", "Shrimp pasta", "Fried rice", "Cacio e Pepe"].map((label, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className="chip"
+                  onClick={() => handleQuickFill(idx)}
+                >
+                  <Icon name="Sparkles" size={12} stroke="var(--navy-700)" />
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="card-section">
+            <div className="row">
+              <div className="field">
+                <div className="label-row">
+                  <label className="label" htmlFor="fridge-top-n">
+                    <Icon name="Info" size={14} stroke="var(--navy-700)" />
+                    Show top
+                  </label>
+                </div>
+                <select
+                  id="fridge-top-n"
+                  className="select"
+                  value={topN}
+                  onChange={(e) => setTopN(Number(e.target.value))}
+                  aria-label="Number of results"
+                >
+                  {[3,6,10,20].map(n => <option key={n} value={n}>{n} recipes</option>)}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div className="card-section">
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={handleSearch}
+              disabled={working || !text.trim()}
+              aria-label="Search recipes"
+            >
+              {working ? <span className="spinner" aria-hidden="true" /> : <Icon name="Flame" size={18} stroke="rgba(255,255,255,.95)" />}
+              <span className="btn-text">{working ? "Matching…" : "Find recipes"}</span>
+            </button>
+          </div>
+        </div>
+
+        {result && result.topRecipes.length && (
+          <div className="results" aria-live="polite">
+            <div className="result-card">
+              <div className="result-head">
+                <div>
+                  <h2 className="result-title">Best matches</h2>
+                  <p className="result-sub">
+                    {result.ingredients.length} ingredient{result.ingredients.length !== 1 ? "s" : ""} listed · {result.topRecipes.length} recipe{result.topRecipes.length !== 1 ? "s" : ""} ranked
+                  </p>
+                </div>
+                <span className="tag">
+                  <Icon name="Check" size={12} stroke="#165a3a" />
+                  Matched
+                </span>
+              </div>
+
+              <div className="result-body">
+                <ol className="recipe-list">
+                  {result.topRecipes.map((p, idx) => (
+                    <li key={p.recipe.id} className="recipe-item" tabIndex={0} role="button"
+                      onClick={() => {
+                        const bullets = p.recipe.ingredients.map(i => `- ${i.name}: ${i.amount}`).join("\n");
+                        const steps = p.recipe.instructions.map((s, i2) => `${i2+1}. ${s}`).join("\n");
+                        setText(`# ${p.recipe.name}\n\nIngredients:\n${bullets}\n\nInstructions:\n${steps}`);
+                      }}
+                      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") e.currentTarget.click(); }}
+                      aria-label={`Open recipe: ${p.recipe.name}`}
+                    >
+                      <div className="recipe-top">
+                        <div>
+                          <h3 className="recipe-name">#{idx+1} — {p.recipe.name}</h3>
+                          <div className="recipe-meta">
+                            <span className="mini">
+                              <Icon name="Clock" size={12} stroke="var(--ink-400)" />
+                              {p.recipe.timeMinutes} min
+                            </span>
+                            <span className="mini">
+                              <Icon name="Info" size={12} stroke="var(--ink-400)" />
+                              {p.recipe.difficulty} · {p.recipe.cuisine}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="score">
+                          match {(p.score * 100).toFixed(0)}%
+                        </div>
+                      </div>
+                      <div className="recipe-bottom">
+                        <p className="recipe-sub">
+                          Hits: {p.hits.length}/{p.totalRequired} ingredients covered ·
+                          Missing: {p.misses.length || "none"}
+                        </p>
+                        <div className="recipe-tags">
+                          {p.recipe.tags.map((t, i) => (
+                            <span key={i} className="tag-mini">
+                              <Icon name="Sparkles" size={10} stroke="var(--navy-700)" />
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+    );
+  };
+
+  // Scanner mode
+  const ScannerPanel = () => {
+    const [mode, setMode] = useState("idle"); // idle | camera | text
+    const [text, setText] = useState("");
+    const [result, setResult] = useState(null);
+    const [cameraStatus, setCameraStatus] = useState("");
+    const [working, setWorking] = useState(false);
+
+    const videoRef = useRef(null);
+    const canvasRef = useRef(null);
+    const streamRef = useRef(null);
+
+    const stopCamera = useCallback(() => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(t => t.stop());
+        streamRef.current = null;
+      }
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
+      setCameraStatus("");
+      setMode("idle");
+    }, []);
+
+    const startCamera = useCallback(async () => {
+      setResult(null);
+      setMode("camera");
+      setCameraStatus("Requesting camera…");
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } }
+        });
+        streamRef.current = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+        setCameraStatus("Camera on — frame the label");
+      } catch (e) {
+        setCameraStatus("Camera access blocked. Try Paste instead.");
+        setTimeout(() => setMode("idle"), 800);
+      }
+    }, []);
+
+    const captureAndAnalyze = useCallback(() => {
+      if (!videoRef.current || !canvasRef.current) return;
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 360;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // In a real app, run Tesseract.ocr() here.
+      // For this prototype, we simulate "OCR-like" extraction from user text or a mock.
+      setCameraStatus("Analyzing…");
+      setWorking(true);
+
+      // If user provided text, use it; otherwise use a canned label mock.
+      const mockLabel = text.trim() ? text : `
+        Ingredients: whole grain oats, sugar, canola oil, wheat flour, honey, salt, cinnamon, natural flavor.
+        Contains: wheat. May contain traces of nuts, milk, and soy.
+        Vitamins and minerals: calcium carbonate, iron, zinc, vitamin C, vitamin E, niacinamide, vitamin B6.
+      `;
+
+      setTimeout(() => {
+        const out = scanLikeOCR(mockLabel);
+        setResult(out);
+        setWorking(false);
+        setCameraStatus("Scan ready — review below");
+      }, 850);
+    }, [text]);
+
+    const handleAnalyzeText = useCallback(() => {
+      if (!text.trim()) return;
+      setMode("text");
+      setWorking(true);
+      setResult(null);
+      setTimeout(() => {
+        const out = scanLikeOCR(text);
+        setResult(out);
+        setWorking(false);
+      }, 620);
+    }, [text]);
+
+    useEffect(() => {
+      return () => stopCamera();
+    }, [stopCamera]);
+
+    return (
+      <section className="panel" aria-label="Scanner mode controls">
+        <div className="card">
+          <div className="card-section">
+            <div className="label-row">
+              <div className="label">
+                <Icon name="Camera" size={14} stroke="var(--navy-700)" />
+                Food label scanner
+              </div>
+              <span className="hint">Camera or paste text</span>
+            </div>
+
+            <div className="camera" aria-label="Camera preview area">
+              {mode === "camera" ? (
+                <div className="camera-live">
+                  <video ref={videoRef} autoPlay playsInline muted aria-label="Camera feed" />
+                  <canvas ref={canvasRef} aria-hidden="true" />
+                  <div className="camera-controls">
+                    <div className="status" aria-live="polite">
+                      <span className="dot" data-idle={!working} aria-hidden="true" />
+                      <span><strong>Capture:</strong> {cameraStatus || "Ready"}</span>
+                    </div>
+                    <div style={{display:"flex", gap:"8px", flexWrap:"wrap", alignItems:"center", justifyContent:"flex-end"}}>
+                      <button
+                        type="button"
+                        className="btn-secondary"
+                        onClick={captureAndAnalyze}
+                        disabled={working}
+                        aria-label="Capture and analyze label"
+                      >
+                        <Icon name="ScanLine" size={14} stroke="var(--navy-800)" />
+                        {working ? "Analyzing…" : "Analyze"}
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-secondary"
+                        onClick={stopCamera}
+                        aria-label="Stop camera"
+                      >
+                        <Icon name="Refresh" size={14} stroke="var(--navy-800)" />
+                        Reset
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="camera-empty">
+                  <div className="camera-icon" aria-hidden="true">
+                    <Icon name="Camera" size={26} stroke="var(--navy-700)" />
+                  </div>
+                  <h3 className="camera-title">Point your camera at a food label</h3>
+                  <p className="camera-sub">
+                    We'll spot allergens, additives, and cleaner ingredients quickly. In a real app this uses on-device OCR; in this prototype you can also paste label text below.
+                  </p>
+                  <div className="camera-actions">
+                    <button type="button" className="btn-secondary" onClick={startCamera}>
+                      <Icon name="Camera" size={14} stroke="var(--navy-800)" />
+                      Open camera
+                    </button>
+                    <button type="button" className="btn-secondary" onClick={() => setMode("idle")}>
+                      <Icon name="Upload" size={14} stroke="var(--navy-800)" />
+                      Paste instead
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="card-section">
+            <div className="label-row">
+              <label className="label" htmlFor="scanner-text">
+                <Icon name="Upload" size={14} stroke="var(--navy-700)" />
+                Paste label text
+              </label>
+              <span className="hint">Or leave blank for a demo</span>
+            </div>
+            <textarea
+              id="scanner-text"
+              className="input"
+              style={{minHeight: 92}}
+              placeholder="Paste an ingredients list or label text here.&#10;&#10;If you leave it blank and tap Analyze, we'll use a demo label to show how it works."
+              value={text}
+              onChange={(e) => { setText(e.target.value); setResult(null); }}
+            />
+          </div>
+
+          <div className="card-section">
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={handleAnalyzeText}
+              disabled={working}
+              aria-label="Analyze label text"
+            >
+              {working ? <span className="spinner" aria-hidden="true" /> : <Icon name="Sparkles" size={18} stroke="rgba(255,255,255,.95)" />}
+              <span className="btn-text">{working ? "Analyzing…" : "Analyze"}</span>
+            </button>
+          </div>
+        </div>
+
+        {result && (
+          <div className="results" aria-live="polite">
+            <div className="result-card">
+              <div className="result-head">
+                <div>
+                  <h2 className="result-title">{result.title}</h2>
+                  <p className="result-sub">{result.summary}</p>
+                </div>
+                <span
+                  className="tag"
+                  data-kind={
+                    result.sentiment === "warning" ? "error" :
+                    result.sentiment === "positive" ? undefined : "warning"
+                  }
+                >
+                  <Icon
+                    name={result.sentiment === "positive" ? "Check" : "Info"}
+                    size={12}
+                    stroke={
+                      result.sentiment === "warning" ? "#8b2525" :
+                      result.sentiment === "positive" ? "#165a3a" : "#925a10"
+                    }
+                  />
+                  Scan: {result.sentiment}
+                </span>
+              </div>
+
+              <div className="result-body">
+                {result.topIngredients.length ? (
+                  <div className="group">
+                    <div className="group-title">
+                      <div className="group-title-main">
+                        <Icon name="Info" size={14} stroke="var(--navy-700)" />
+                        Top ingredients detected
+                      </div>
+                      <span className="group-title-hint">{result.topIngredients.length} tokens</span>
+                    </div>
+                    <ol className="list">
+                      {result.topIngredients.map((i, idx) => (
+                        <li key={idx} className="item">
+                          <div className="item-left">
+                            <div className="item-name">{i.name}</div>
+                            <div className="item-note">{i.note}</div>
+                          </div>
+                          <div className="item-pill">#{idx+1}</div>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                ) : null}
+
+                <div className="divider" style={{marginTop:"10px"}} />
+
+                <div className="group">
+                  <div className="group-title">
+                    <div className="group-title-main">
+                      <Icon name="Check" size={14} stroke="var(--navy-700)" />
+                      Highlights
+                    </div>
+                    <span className="group-title-hint">Quick decision signals</span>
+                  </div>
+                  <ul className="list">
+                    <li className="item">
+                      <div className="item-left">
+                        <div className="item-name">Allergens</div>
+                        <div className="item-note">
+                          {result.allergens.length
+                            ? `Watch for: ${result.allergens.join(", ")}`
+                            : "No obvious common allergens found in this scan."}
+                        </div>
+                      </div>
+                      <div className="item-pill">{result.allergens.length || "0"}</div>
+                    </li>
+                    <li className="item">
+                      <div className="item-left">
+                        <div className="item-name">Additives / processed markers</div>
+                        <div className="item-note">
+                          {result.additives.length
+                            ? `Note: ${result.additives.join(", ")}`
+                            : "No obvious additive markers flagged."}
+                        </div>
+                      </div>
+                      <div className="item-pill">{result.additives.length || "0"}</div>
+                    </li>
+                    <li className="item">
+                      <div className="item-left">
+                        <div className="item-name">Cleaner signals</div>
+                        <div className="item-note">
+                          {result.positives.length
+                            ? `Liked: ${result.positives.join(", ")}`
+                            : "No strong cleaner markers found in this text."}
+                        </div>
+                      </div>
+                      <div className="item-pill">{result.positives.length || "0"}</div>
+                    </li>
+                  </ul>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+    );
+  };
+
+  // App shell
+  const App = () => {
+    const [mode, setMode] = useState("transform");
+
+    const handleModeChange = useCallback((next) => {
+      if (!["transform","fridge","scanner"].includes(next)) next = "transform";
+      setMode(next);
+      window.scrollTo?.({ top: 0, behavior: "smooth" });
+    }, []);
+
+    return (
+      <div className="frame" role="application" aria-label="Food Guru Chef Tool">
+        <header className="topbar">
+          <div className="brand">
+            <div className="logo" aria-hidden="true">
+              <Icon name="ChefHat" size={20} stroke="rgba(255,255,255,.95)" />
+            </div>
+            <div className="brand-text">
+              <div className="brand-title">Food Guru</div>
+              <div className="brand-sub">Chef Tool · {mode === "transform" ? "Transform" : mode === "fridge" ? "Fridge Raid" : "Scanner"}</div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="pill"
+            onClick={() => {
+              const url = new URL(location.href);
+              url.hash = "";
+              url.search = "";
+              location.href = url.href;
+            }}
+            aria-label="Reset tool"
+          >
+            <Icon name="Refresh" size={14} stroke="var(--navy-700)" />
+            Reset
+          </button>
+        </header>
+
+        <main className="content">
+          <Hero mode={mode} />
+          <ModeTabs mode={mode} onMode={handleModeChange} />
+
+          {mode === "transform" && <TransformPanel />}
+          {mode === "fridge" && <FridgePanel />}
+          {mode === "scanner" && <ScannerPanel />}
+        </main>
+
+        <BottomNav mode={mode} onMode={handleModeChange} />
+      </div>
+    );
+  };
+
+  const root = ReactDOM.createRoot(document.getElementById("root"));
+  root.render(<App />);
+</script>
+</body>
+</html>

@@ -228,7 +228,7 @@ textarea.dt-input { height: auto; padding: 12px 14px; resize: none; font-family:
   .dt-recipe-body { padding: 48px 32px 64px; grid-template-columns: 1fr; gap: 40px; }
   .dt-side-stick { position: static; }
   .dt-translator { grid-template-columns: 1fr; }
-  .dt-translator-left { padding: 36px 32px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .dt-translator-left { display: none; }
   .dt-translator-right { padding: 36px 32px; }
   .dt-footer { padding: 40px 32px 28px; grid-template-columns: 1fr 1fr; gap: 32px; }
   .dt-reviews-intro { grid-template-columns: 1fr !important; gap: 24px !important; }
@@ -274,7 +274,8 @@ textarea.dt-input { height: auto; padding: 12px 14px; resize: none; font-family:
   .dt-step { gap: 14px; grid-template-columns: 40px 1fr; padding: 18px 0; }
   .dt-step-num { font-size: 24px; }
   .dt-step p { font-size: 15px; }
-  .dt-translator-left, .dt-translator-right { padding: 28px 20px; }
+  .dt-translator-left { display: none; }
+  .dt-translator-right { padding: 28px 20px; }
   .dt-sticky-cta { margin: 20px -20px 0; padding: 14px 20px 18px; }
   .dt-footer { padding: 36px 20px 24px; grid-template-columns: 1fr; gap: 28px; }
   .dt-reviews-grid { grid-template-columns: 1fr; }
