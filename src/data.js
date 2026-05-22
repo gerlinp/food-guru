@@ -289,39 +289,6 @@ const DT_EQUIPMENT = ['No oven','No stand mixer','Instant Pot','Air fryer','Sing
 const DT_SKILLS    = ['Beginner','Comfortable','Pro'];
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
-function buildTranslation() {
-  const A = s => ({ kind:'add',  text:s });
-  const R = s => ({ kind:'rm',   text:s });
-  const K = s => ({ kind:'keep', text:s });
-  return {
-    ingredients:[
-      {qty:'18 oz',  item:[R('fresh tagliatelle'),  A('gluten-free fettuccine')]},
-      {qty:'12 tbsp',item:[R('unsalted butter'),     A('vegan cultured butter')]},
-      {qty:'30',     item:[K('fresh sage leaves')]},
-      {qty:'3 cloves',item:[K('garlic, smashed')]},
-      {qty:'¾ cup',  item:[R('Parmigiano-Reggiano'), A('aged cashew parm')]},
-      {qty:'1½ tsp', item:[K('lemon zest')]},
-      {qty:'⅜ tsp',  item:[K('freshly grated nutmeg')]},
-      {qty:'2 tbsp', item:[A('nutritional yeast')],  isNew:true},
-      {qty:'to taste',item:[K('flaky sea salt + black pepper')]},
-    ],
-    changes:[
-      'Swapped butter for cultured vegan butter — it still browns and tastes nutty.',
-      'Used gluten-free fettuccine; reduce cook time by 30 seconds, the starch behaves differently.',
-      'Replaced Parmigiano with aged cashew parmesan + a hit of nutritional yeast for that savory edge.',
-      'Scaled everything 1.5× to feed 6.',
-      'Combined steps 2 and 3 to fit a 30-minute window — start the sauce while the water is heating.',
-    ],
-    steps:[
-      'Bring a large pot of well-salted water to a boil. Drop the [gluten-free fettuccine] and cook to just shy of al dente, ~2 minutes less than the package says.',
-      'While the water heats, melt the [vegan butter] in a wide skillet over medium heat. Add garlic and sage and swirl constantly until the solids turn deep hazelnut and smell toasted, ~4 minutes. Lift the sage onto a plate.',
-      'Kill the heat. Add a ladle of pasta water to stop the cooking. Transfer the pasta straight in and toss for a full minute, splashing more pasta water until glossy.',
-      'Off heat, shower with [cashew parm], [nutritional yeast], lemon zest, and nutmeg. Toss, taste, adjust salt.',
-      'Plate, crown with crisp sage and a few cracks of pepper.',
-    ],
-  };
-}
-
 function scaleQty(qty, factor) {
   if (factor === 1) return qty;
   const fracs = {'½':0.5,'⅓':0.33,'¼':0.25,'⅛':0.125,'¾':0.75,'⅔':0.66,'⅜':0.375};

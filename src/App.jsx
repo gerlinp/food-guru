@@ -68,7 +68,7 @@ function App() {
         {route.name === 'home'        && <Home       onOpenRecipe={openRecipe} onOpenTranslator={openTranslator} onOpenReviews={openReviews} onOpenRecipeList={openRecipeList}/>}
         {route.name === 'recipe-list' && <RecipeList onOpenRecipe={openRecipe} onOpenTranslator={openTranslator}/>}
         {route.name === 'recipe'      && <Recipe     recipeId={route.recipeId} onBack={openRecipeList} onOpenTranslator={openTranslator}/>}
-        {route.name === 'translator'  && <Translator recipeId={route.recipeId} onBack={() => route.recipeId ? openRecipe(route.recipeId) : goHome()}/>}
+        {route.name === 'translator'  && <Translator recipeId={route.recipeId} onBack={() => route.recipeId ? openRecipe(route.recipeId) : goHome()} onNavigate={navigate}/>}
         {route.name === 'reviews'     && <Reviews onOpenReview={openReview}/>}
         {route.name === 'review'      && <ReviewDetail reviewId={route.reviewId} onBack={openReviews}/>}
         {route.name === 'map'         && <RestaurantMap onOpenReview={openReview}/>}
