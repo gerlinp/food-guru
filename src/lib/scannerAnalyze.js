@@ -1,4 +1,4 @@
-// Food Scanner — product lookup + health analysis
+// Food Scanner — product lookup + health analysis via OpenAI gpt-4o-mini
 
 async function fetchProduct(barcode) {
   const res = await fetch(
@@ -14,21 +14,21 @@ async function fetchProduct(barcode) {
 async function analyzeProduct(product) {
   const n = product.nutriments || {};
   const per100 = [
-    n['energy-kcal_100g'] != null ? `${n['energy-kcal_100g']} kcal` : null,
-    n['fat_100g']          != null ? `Fat: ${n['fat_100g']}g`        : null,
+    n['energy-kcal_100g'] != null ? `${n['energy-kcal_100g']} kcal`         : null,
+    n['fat_100g']          != null ? `Fat: ${n['fat_100g']}g`                : null,
     n['saturated-fat_100g'] != null ? `Sat fat: ${n['saturated-fat_100g']}g` : null,
-    n['sugars_100g']       != null ? `Sugars: ${n['sugars_100g']}g`  : null,
-    n['fiber_100g']        != null ? `Fiber: ${n['fiber_100g']}g`    : null,
-    n['proteins_100g']     != null ? `Protein: ${n['proteins_100g']}g`: null,
-    n['salt_100g']         != null ? `Salt: ${n['salt_100g']}g`      : null,
+    n['sugars_100g']       != null ? `Sugars: ${n['sugars_100g']}g`          : null,
+    n['fiber_100g']        != null ? `Fiber: ${n['fiber_100g']}g`            : null,
+    n['proteins_100g']     != null ? `Protein: ${n['proteins_100g']}g`       : null,
+    n['salt_100g']         != null ? `Salt: ${n['salt_100g']}g`              : null,
   ].filter(Boolean).join(', ');
 
   const additives = (product.additives_tags || [])
     .map(a => a.replace('en:', '').toUpperCase())
     .join(', ');
 
-  const systemPrompt = `You are a nutritionist for a food website. Analyze a packaged food product and return a health summary that is honest, clear, and useful for both adults and parents of children.
-Return ONLY valid JSON — no markdown, no code fences. Use this exact schema:
+  const systemPrompt = `You are a nutritionist for a food website. Analyze a packaged food product and return an honest, clear health summary useful for adults and parents of children.
+Return ONLY valid JSON using this exact schema:
 {
   "rating": "Good",
   "score": 8,
@@ -48,7 +48,7 @@ Rules:
 - rating must be one of: "Great", "Good", "Okay", "Poor", "Avoid"
 - score is 1-10 (10 = perfectly healthy)
 - Be specific — mention actual ingredients and nutrients by name
-- For children, consider sugar levels, additives, sodium, processed fats, and portion appropriateness
+- For children, consider sugar, additives, sodium, processed fats, and portion size
 - Never be alarmist, but be honest about concerns`;
 
   const userPrompt = `Product: ${product.product_name || 'Unknown'} by ${product.brands || 'Unknown brand'}
@@ -60,35 +60,7 @@ Allergens: ${product.allergens || 'none listed'}
 Nutri-Score: ${(product.nutriscore_grade || '').toUpperCase() || 'not available'}
 NOVA group: ${product.nova_group || 'not available'} (1=unprocessed, 4=ultra-processed)
 
-Analyze this product's health profile for adults and children of all ages. Return only the JSON object.`;
+Analyze this product for adults and children of all ages. Return only the JSON object.`;
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'x-api-key': ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1024,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userPrompt }],
-    }),
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error?.message || `API error ${res.status}`);
-  }
-
-  const data = await res.json();
-  const raw = data.content?.[0]?.text || '';
-  try {
-    return JSON.parse(raw);
-  } catch {
-    const stripped = raw.replace(/^```json?\s*/i, '').replace(/\s*```$/, '').trim();
-    return JSON.parse(stripped);
-  }
+  return await aiCall(systemPrompt, userPrompt, 1024);
 }
