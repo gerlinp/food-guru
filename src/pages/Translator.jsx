@@ -61,8 +61,8 @@ function IngredientInput({ value, onChange, onAdd, placeholder }) {
       .slice(0, 6)
       .map(i => ({ label: i, type: 'ingredient' }));
 
-    // Cuisine matches from TheMealDB supported areas
-    const cuisineMatches = MEALDB_CUISINES
+    // Cuisine matches from Recipe API supported cuisines
+    const cuisineMatches = RECIPE_API_CUISINES
       .filter(c => c.toLowerCase().startsWith(q) || c.toLowerCase().includes(q))
       .slice(0, 3)
       .map(c => ({ label: c, type: 'cuisine' }));
@@ -250,87 +250,186 @@ function GeneratedRecipeCard({ idea, availableIngredients }) {
   );
 }
 
-// ─── TheMealDB recipe card ────────────────────────────────────────────────────
+// ─── TheMealDB recipe detail modal ───────────────────────────────────────────
 
-function MealDBCard({ meal }) {
-  const [phase,   setPhase]   = React.useState('idle'); // idle|loading|done|error
+function RecipeDetailModal({ meal, onClose }) {
   const [details, setDetails] = React.useState(null);
-  const [err,     setErr]     = React.useState('');
+  const [loading, setLoading] = React.useState(true);
+  const [modalErr, setModalErr] = React.useState('');
+  const [servings, setServings] = React.useState(meal.servings || 4);
+  const [checked, setChecked] = React.useState({});
 
-  const onExpand = async () => {
-    setPhase('loading');
-    try {
-      const d = await getMealDetails(meal.id);
-      setDetails(d);
-      setPhase('done');
-    } catch(e) {
-      setErr(e.message);
-      setPhase('error');
-    }
-  };
+  const toggleChecked = i => setChecked(c => ({ ...c, [i]: !c[i] }));
+
+  React.useEffect(() => {
+    const fetchRecipe = async () => {
+      try {
+        const d = await getRecipeDetail(meal.id);
+        setDetails(d);
+      } catch(e) {
+        setModalErr(e.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRecipe();
+  }, [meal.id]);
+
+  if (loading) {
+    return (
+      <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:10000 }}>
+        <div style={{ background:'white', borderRadius:24, padding:40, textAlign:'center', maxWidth:400 }}>
+          <div style={{ fontSize:14, color:'var(--ink-mute)' }}>Loading recipe…</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (modalErr || !details) {
+    return (
+      <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:10000 }}>
+        <div style={{ background:'white', borderRadius:24, padding:40, textAlign:'center', maxWidth:400 }}>
+          <div style={{ fontSize:14, color:'#c0392b', marginBottom:16 }}>Error loading recipe: {modalErr}</div>
+          <button onClick={onClose} style={{ padding:'10px 20px', borderRadius:10, border:'1px solid var(--ct-border)', background:'var(--white)', cursor:'pointer' }}>Close</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ background:'var(--white)', border:'1px solid var(--ct-border)', borderRadius:18, overflow:'hidden' }}>
-      {/* Summary row */}
-      <div style={{ display:'flex', gap:14, padding:16, alignItems:'center' }}>
-        <img src={meal.thumb} alt={meal.title} style={{ width:64, height:64, borderRadius:12, objectFit:'cover', flexShrink:0 }}/>
-        <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ fontFamily:'var(--display)', fontSize:16, fontWeight:700, letterSpacing:'-0.02em', marginBottom:4, color:'var(--ct-label)' }}>{meal.title}</div>
-          <div style={{ fontSize:12, color:'var(--ct-text-soft)' }}>
-            Matches <span style={{ color:'#f0631c', fontWeight:600 }}>{meal.matchedIngredients.join(', ')}</span>
-          </div>
+    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.6)', overflow:'auto', zIndex:10000, padding:20 }}>
+      <div style={{ background:'white', borderRadius:24, maxWidth:900, margin:'0 auto', marginTop:40, marginBottom:40 }}>
+        {/* Header with close */}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:24, borderBottom:'1px solid var(--ct-border)' }}>
+          <h1 style={{ margin:0, fontSize:28, fontWeight:700, letterSpacing:'-0.02em' }}>{details.title}</h1>
+          <button onClick={onClose} style={{ fontSize:20, background:'none', border:'none', cursor:'pointer', color:'var(--ink-mute)' }}>✕</button>
         </div>
-        {phase === 'idle' && (
-          <button onClick={onExpand} className="dt-btn ghost sm" style={{ flexShrink:0 }}>See recipe →</button>
-        )}
-        {phase === 'loading' && (
-          <div style={{ fontSize:12, color:'var(--ct-muted)', flexShrink:0 }}>Loading…</div>
-        )}
-        {phase === 'error' && (
-          <div style={{ fontSize:12, color:'#c0392b', flexShrink:0 }}>{err}</div>
-        )}
-      </div>
 
-      {/* Full recipe */}
-      {phase === 'done' && details && (
-        <div style={{ borderTop:'1px solid var(--ct-border-soft)', padding:16, display:'flex', flexDirection:'column', gap:14 }}>
-          {(details.cuisine || details.category) && (
-            <div style={{ display:'flex', gap:6 }}>
-              {details.cuisine   && <span style={{ padding:'4px 10px', borderRadius:999, background:'var(--ct-kicker-bg)', fontSize:12, fontWeight:600, color:'var(--ct-chip-idle-color)' }}>{details.cuisine}</span>}
-              {details.category  && <span style={{ padding:'4px 10px', borderRadius:999, background:'var(--ct-kicker-bg)', fontSize:12, fontWeight:600, color:'var(--ct-chip-idle-color)' }}>{details.category}</span>}
+        {/* Content */}
+        <div style={{ display:'flex', gap:32, padding:32, maxHeight:'calc(100vh - 200px)', overflow:'auto' }}>
+          {/* Main */}
+          <div style={{ flex:1, minWidth:0 }}>
+            {/* Image */}
+            <div style={{ width:'100%', height:300, borderRadius:16, overflow:'hidden', marginBottom:24, background:'#f5f5f5' }}>
+              {meal.thumb && <img src={meal.thumb} alt={details.title} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>}
             </div>
-          )}
 
-          <div>
-            <div style={{ fontSize:11, fontWeight:700, color:'var(--ct-muted)', letterSpacing:'0.06em', textTransform:'uppercase', marginBottom:8 }}>Ingredients</div>
-            <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
-              {details.ingredients.map((ing, i) => (
-                <div key={i} style={{ display:'grid', gridTemplateColumns:'80px 1fr', gap:10, padding:'7px 0', borderBottom: i < details.ingredients.length - 1 ? '1px solid var(--ct-border-soft)' : 'none', fontSize:13.5 }}>
-                  <span style={{ fontFamily:'var(--mono)', color:'#f0631c', fontWeight:600, fontSize:12 }}>{ing.qty}</span>
-                  <span>{ing.item}</span>
+            {/* Meta info */}
+            <div className="dt-recipe-meta-row" style={{ marginBottom:32 }}>
+              {[
+                details.servings && { label: '🍽️ Serves', val: servings },
+                details.minutes && { label: '⏱️ Time', val: `${details.minutes} min` },
+                details.cuisine && { label: '🌍 Cuisine', val: details.cuisine },
+                details.difficulty && { label: '🔥 Skill', val: details.difficulty },
+              ].filter(Boolean).map((m, i) => (
+                <div key={i} className="dt-recipe-meta-col">
+                  <span className="dt-recipe-meta-label">{m.label}</span>
+                  <span className="dt-recipe-meta-value">{m.val}</span>
                 </div>
               ))}
             </div>
+
+            {/* Steps */}
+            <h2 className="sub">Method</h2>
+            {details.steps && details.steps.length > 0 ? (
+              details.steps.map((s, i) => (
+                <div key={i} className="dt-step">
+                  <div className="dt-step-num">{String(i + 1).padStart(2, '0')}</div>
+                  <p>{s}</p>
+                </div>
+              ))
+            ) : (
+              <p style={{ fontSize:14, color:'var(--ink-mute)' }}>No instructions available.</p>
+            )}
           </div>
 
-          <div>
-            <div style={{ fontSize:11, fontWeight:700, color:'var(--ct-muted)', letterSpacing:'0.06em', textTransform:'uppercase', marginBottom:8 }}>Method</div>
-            {details.steps.map((s, i) => (
-              <div key={i} style={{ display:'grid', gridTemplateColumns:'34px 1fr', gap:8, padding:'10px 0', borderBottom: i < details.steps.length - 1 ? '1px solid var(--ct-border-soft)' : 'none', alignItems:'start' }}>
-                <span style={{ fontFamily:'var(--display)', fontSize:18, color:'var(--ct-step-muted)', fontStyle:'italic', fontWeight:500 }}>{i + 1}</span>
-                <p style={{ margin:0, fontSize:13.5, lineHeight:1.55, color:'var(--ct-text-body)' }}>{s}</p>
+          {/* Sidebar */}
+          <aside style={{ width:280, flexShrink:0 }}>
+            <div className="dt-side-card">
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
+                <h4 style={{ margin:0 }}>Ingredients</h4>
+                {details.servings && (
+                  <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                    <span style={{ fontSize:12, color:'var(--ink-mute)' }}>Serves</span>
+                    <div className="dt-stepper">
+                      <button onClick={() => setServings(s => Math.max(1, s - 1))}>−</button>
+                      <span className="val">{servings}</span>
+                      <button onClick={() => setServings(s => s + 1)}>+</button>
+                    </div>
+                  </div>
+                )}
               </div>
-            ))}
-          </div>
+              {details.ingredients && details.ingredients.length > 0 ? (
+                <ul className="ing-list">
+                  {details.ingredients.map((ing, i) => (
+                    <li key={i} className={`ing-row ${checked[i] ? 'checked' : ''}`} onClick={() => toggleChecked(i)} style={{ cursor:'pointer' }}>
+                      <span className={`ing-check ${checked[i] ? 'on' : ''}`}>
+                        {checked[i] && <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="var(--cream)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                      </span>
+                      <span className="ing-qty">{ing.qty}</span>
+                      <span className="ing-name">{ing.item}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p style={{ fontSize:14, color:'var(--ink-mute)' }}>No ingredients listed.</p>
+              )}
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-          {details.youtubeUrl && (
-            <a href={details.youtubeUrl} target="_blank" rel="noopener noreferrer"
-              style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:13, fontWeight:600, color:'#f0631c', textDecoration:'none' }}>
-              ▶ Watch on YouTube
-            </a>
+// ─── TheMealDB recipe card ───────────────────────────────────────────────────
+
+function MealDBRecipeDetail({ meal, details, onBack }) {
+  return <RecipeDetail recipe={meal} details={details} onBack={onBack} />;
+}
+
+function MealDBCard({ meal, onViewRecipe }) {
+  const gradeColors = { 'A': '#22863a', 'B': '#28a745', 'C': '#ffc107', 'D': '#ff8c00', 'F': '#dc3545' };
+  const gradeColor = gradeColors[meal.healthGrade] || '#666';
+
+  return (
+    <div style={{ background:'var(--white)', border:'1px solid var(--ct-border)', borderRadius:18, overflow:'hidden', cursor:'pointer', transition:'all .2s ease', display:'flex', flexDirection:'column', height:'100%' }} className="dt-feature-card">
+      {/* Image */}
+      <div onClick={() => onViewRecipe(meal)} style={{ width:'100%', height:200, position:'relative', overflow:'hidden', background:'#f5f5f5' }}>
+        {meal.thumb && (
+          <img src={meal.thumb} alt={meal.title} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
+        )}
+        {/* Health grade badge */}
+        {meal.healthGrade && (
+          <div style={{ position:'absolute', top:8, right:8, width:32, height:32, borderRadius:'50%', background:gradeColor, color:'white', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700, fontSize:14, boxShadow:'0 2px 8px rgba(0,0,0,0.2)' }}>
+            {meal.healthGrade}
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      <div style={{ padding:16, display:'flex', flexDirection:'column', gap:10, flex:1 }}>
+        <div>
+          <h3 style={{ margin:'0 0 8px', fontFamily:'var(--display)', fontSize:16, fontWeight:700, letterSpacing:'-0.02em', color:'var(--ink)', lineHeight:1.2 }}>{meal.title}</h3>
+          {meal.matchedIngredients.length > 0 && (
+            <div style={{ fontSize:12, color:'var(--ink-soft)' }}>
+              Matches: <span style={{ color:'#f0631c', fontWeight:600 }}>{meal.matchedIngredients.join(', ')}</span>
+            </div>
           )}
         </div>
-      )}
+
+        {/* Meta */}
+        <div style={{ fontSize:12, color:'var(--ink-mute)', display:'flex', alignItems:'center', gap:8, flexWrap:'wrap', marginTop:'auto' }}>
+          {meal.servings && <span>Serves {meal.servings}</span>}
+          {meal.servings && meal.totalTime && <span style={{ opacity:0.3 }}>•</span>}
+          {meal.totalTime && <span>{meal.totalTime}</span>}
+        </div>
+
+        {/* Button */}
+        <button onClick={() => onViewRecipe(meal)} style={{ width:'100%', padding:'8px 12px', borderRadius:10, border:'1px solid var(--ct-border)', background:'var(--white)', fontSize:12, fontWeight:600, cursor:'pointer', color:'var(--orange)', marginTop:8 }}>
+          View recipe →
+        </button>
+      </div>
     </div>
   );
 }
@@ -361,7 +460,7 @@ function FindResults({ results, availableIngredients, onRevise, onViewRecipe }) 
             <span style={{ fontSize:12, color:'var(--ct-hint)' }}>{mealdb.length} found</span>
           </div>
           <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-            {mealdb.map(meal => <MealDBCard key={meal.id} meal={meal}/>)}
+            {mealdb.map(meal => <MealDBCard key={meal.id} meal={meal} onViewRecipe={onViewRecipe}/>)}
           </div>
         </div>
       )}
@@ -457,10 +556,271 @@ function formatRecipeAsText(recipe) {
   return lines.join('\n');
 }
 
+// ─── Compact recipe view (for translator left pane) ─────────────────────────
+
+function CompactRecipeView({ recipe, details, onBack, onTransform, searchedIngredients = [], showTransformOptions = false }) {
+  const [servings, setServings] = React.useState(details.servings || 4);
+
+  // Pre-check ingredients that match searched ingredients
+  const initialChecked = {};
+  if (searchedIngredients.length > 0 && details.ingredients) {
+    details.ingredients.forEach((ing, i) => {
+      const ingLower = ing.item.toLowerCase();
+      initialChecked[i] = searchedIngredients.some(search => ingLower.includes(search.toLowerCase()));
+    });
+  }
+
+  const [checked, setChecked] = React.useState(initialChecked);
+  const [diet, setDiet] = React.useState([]);
+  const [allergies, setAllergies] = React.useState([]);
+  const [cuisine, setCuisine] = React.useState('');
+  const [time, setTime] = React.useState(details.minutes || 60);
+  const [skill, setSkill] = React.useState('Intermediate');
+
+  const toggle = i => setChecked(c => ({ ...c, [i]: !c[i] }));
+  const toggleArray = (arr, item) => {
+    return arr.includes(item) ? arr.filter(x => x !== item) : [...arr, item];
+  };
+
+  const scaleQty = (qty, factor) => {
+    if (!qty) return '';
+    const match = qty.match(/^([\d.]+)\s*(.*)$/);
+    if (!match) return qty;
+    const [, num, unit] = match;
+    const scaled = parseFloat(num) * factor;
+    return scaled % 1 === 0 ? `${scaled}${unit}` : `${scaled.toFixed(2)}${unit}`;
+  };
+
+  return (
+    <>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:12 }}>
+        <button onClick={onBack} style={{ background:'none', border:'none', cursor:'pointer', fontSize:13, color:'var(--ink-mute)', padding:0 }}>← Back</button>
+        <span style={{ fontSize:11, fontWeight:700, color:'var(--ct-hint)', textTransform:'uppercase', letterSpacing:'0.05em' }}>{details.cuisine || 'Recipe'}</span>
+      </div>
+
+      <h2 style={{ margin:'0 0 12px', fontSize:18, fontWeight:700, fontFamily:'var(--display)', lineHeight:1.2, color:'var(--ink)' }}>{details.title}</h2>
+
+      {recipe.thumb && (
+        <img src={recipe.thumb} alt={details.title} style={{ width:'100%', height:160, objectFit:'cover', borderRadius:10, marginBottom:16 }}/>
+      )}
+
+      {details.ingredients && details.ingredients.length > 0 && (
+        <div style={{ marginBottom:16 }}>
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
+            <h4 style={{ margin:0, fontSize:12, fontWeight:700, color:'var(--ct-label)' }}>Ingredients</h4>
+            {details.servings && (
+              <div className="dt-stepper" style={{ transform:'scale(0.8)', transformOrigin:'right' }}>
+                <button onClick={() => setServings(s => Math.max(1, s - 1))}>−</button>
+                <span className="val">{servings}</span>
+                <button onClick={() => setServings(s => s + 1)}>+</button>
+              </div>
+            )}
+          </div>
+          <ul style={{ listStyle:'none', margin:0, padding:0 }}>
+            {details.ingredients.map((ing, i) => (
+              <li key={i} onClick={() => toggle(i)} style={{ display:'grid', gridTemplateColumns:'20px 1fr', gap:8, padding:'8px 0', borderBottom:'1px solid var(--line-soft)', fontSize:12, cursor:'pointer', alignItems:'flex-start' }}>
+                <span style={{ width:20, height:20, borderRadius:6, border:'1.5px solid var(--line)', background: checked[i] ? 'var(--orange)' : 'var(--white)', marginTop:1, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                  {checked[i] && <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="var(--navy)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                </span>
+                <div>
+                  <span style={{ fontFamily:'var(--mono)', color:'var(--orange)', fontWeight:600, fontSize:11 }}>{details.servings ? scaleQty(ing.qty, servings / details.servings) : ing.qty}</span>
+                  <span style={{ display:'block', color: checked[i] ? 'var(--ink-mute)' : 'var(--ink)', textDecoration: checked[i] ? 'line-through' : 'none', marginTop:2 }}>{ing.item}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {details.steps && details.steps.length > 0 && (
+        <div>
+          <h4 style={{ margin:'0 0 10px', fontSize:12, fontWeight:700, color:'var(--ct-label)' }}>Method</h4>
+          {details.steps.map((s, i) => (
+            <div key={i} style={{ display:'grid', gridTemplateColumns:'22px 1fr', gap:8, padding:'10px 0', borderBottom:i < details.steps.length - 1 ? '1px solid var(--line-soft)' : 'none', fontSize:12, lineHeight:1.4 }}>
+              <span style={{ fontWeight:700, color:'var(--ct-muted)', marginTop:2 }}>{String(i + 1).padStart(2, '0')}</span>
+              <p style={{ margin:0 }}>{s}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Transform options (mobile only) */}
+      {showTransformOptions && (
+        <div style={{ marginTop:16, paddingTop:16, borderTop:'1px solid var(--line-soft)' }}>
+          <h4 style={{ margin:'0 0 12px', fontSize:11, fontWeight:700, color:'var(--ct-label)', textTransform:'uppercase', letterSpacing:'0.05em' }}>Transform options</h4>
+
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:12 }}>
+          <div>
+            <label style={{ display:'block', fontSize:10, fontWeight:700, color:'var(--ct-hint)', marginBottom:5 }}>Servings</label>
+            <input type="number" min="1" value={servings} onChange={e => setServings(parseInt(e.target.value) || 1)} style={{ width:'100%', padding:'6px 8px', border:'1px solid var(--ct-border)', borderRadius:6, fontSize:11, boxSizing:'border-box' }}/>
+          </div>
+          <div>
+            <label style={{ display:'block', fontSize:10, fontWeight:700, color:'var(--ct-hint)', marginBottom:5 }}>Time (min)</label>
+            <input type="number" min="5" value={time} onChange={e => setTime(parseInt(e.target.value) || 60)} style={{ width:'100%', padding:'6px 8px', border:'1px solid var(--ct-border)', borderRadius:6, fontSize:11, boxSizing:'border-box' }}/>
+          </div>
+        </div>
+
+        <div style={{ marginBottom:12 }}>
+          <label style={{ display:'block', fontSize:10, fontWeight:700, color:'var(--ct-hint)', marginBottom:5 }}>Skill</label>
+          <div style={{ display:'flex', gap:6 }}>
+            {['Easy', 'Intermediate', 'Advanced'].map(s => (
+              <button key={s} onClick={() => setSkill(s)} style={{ flex:1, padding:'5px 0', borderRadius:5, border:'1px solid var(--ct-border)', background: skill === s ? 'var(--orange)' : 'var(--white)', color: skill === s ? 'white' : 'var(--ink)', cursor:'pointer', fontSize:10, fontWeight:600 }}>{s}</button>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ marginBottom:12 }}>
+          <label style={{ display:'block', fontSize:10, fontWeight:700, color:'var(--ct-hint)', marginBottom:5 }}>Cuisine</label>
+          <input type="text" placeholder="Thai, Moroccan..." value={cuisine} onChange={e => setCuisine(e.target.value)} style={{ width:'100%', padding:'6px 8px', border:'1px solid var(--ct-border)', borderRadius:6, fontSize:11, boxSizing:'border-box' }}/>
+        </div>
+
+        <div style={{ marginBottom:12 }}>
+          <label style={{ display:'block', fontSize:10, fontWeight:700, color:'var(--ct-hint)', marginBottom:5 }}>Dietary</label>
+          <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
+            {['Vegan', 'Vegetarian', 'Gluten-Free', 'Dairy-Free'].map(d => (
+              <button key={d} onClick={() => setDiet(toggleArray(diet, d))} style={{ padding:'4px 8px', borderRadius:999, border:'1px solid var(--ct-border)', background: diet.includes(d) ? 'rgba(240,99,28,.15)' : 'var(--white)', color: diet.includes(d) ? 'var(--orange)' : 'var(--ink)', cursor:'pointer', fontSize:9, fontWeight:600 }}>{d}</button>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ marginBottom:12 }}>
+          <label style={{ display:'block', fontSize:10, fontWeight:700, color:'var(--ct-hint)', marginBottom:5 }}>Avoid</label>
+          <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
+            {['Nuts', 'Eggs', 'Soy', 'Shellfish'].map(a => (
+              <button key={a} onClick={() => setAllergies(toggleArray(allergies, a))} style={{ padding:'4px 8px', borderRadius:999, border:'1px solid var(--ct-border)', background: allergies.includes(a) ? 'rgba(192,57,43,.15)' : 'var(--white)', color: allergies.includes(a) ? '#c0392b' : 'var(--ink)', cursor:'pointer', fontSize:9, fontWeight:600 }}>{a}</button>
+            ))}
+          </div>
+        </div>
+        </div>
+      )}
+
+      <div style={{ display:'flex', gap:8, marginTop: showTransformOptions ? 12 : 16 }}>
+        <button onClick={() => {
+          const excludedItems = Object.keys(checked).filter(i => !checked[i]).map(i => details.ingredients[parseInt(i)].item);
+          onTransform(excludedItems);
+        }} style={{ flex:1, padding:'8px 10px', borderRadius:8, border:'none', background:'var(--orange)', color:'white', cursor:'pointer', fontWeight:600, fontSize:11 }}>Transform</button>
+        <button onClick={onBack} style={{ flex:1, padding:'8px 10px', borderRadius:8, border:'1px solid var(--ct-border)', background:'var(--white)', cursor:'pointer', fontWeight:600, fontSize:11 }}>Back</button>
+      </div>
+    </>
+  );
+}
+
+// ─── Transform panel ──────────────────────────────────────────────────────────
+
+function TransformPanel({ recipe, recipeDetails, onBack, excludedIngredients = [] }) {
+  const [diet, setDiet] = React.useState([]);
+  const [allergies, setAllergies] = React.useState([]);
+  const [cuisine, setCuisine] = React.useState('');
+  const [time, setTime] = React.useState(recipeDetails.minutes || 60);
+  const [skill, setSkill] = React.useState('Intermediate');
+  const [servings, setServings] = React.useState(recipeDetails.servings || 4);
+  const [excluded, setExcluded] = React.useState(excludedIngredients);
+  const [transforming, setTransforming] = React.useState(false);
+  const [result, setResult] = React.useState(null);
+  const [err, setErr] = React.useState('');
+
+  const toggleArray = (arr, item) => {
+    return arr.includes(item) ? arr.filter(x => x !== item) : [...arr, item];
+  };
+
+  const onTransform = async () => {
+    setTransforming(true);
+    setErr('');
+    try {
+      const config = { servings, diet, allergies, cuisine, time, skill, equipment: [], excluded, pantry: '' };
+      const transformed = await transformRecipe(recipe, config);
+      setResult(transformed);
+    } catch (e) {
+      setErr(e.message);
+    } finally {
+      setTransforming(false);
+    }
+  };
+
+  if (result) {
+    return (
+      <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+        <div style={{ background:'var(--white)', border:'1px solid var(--ct-border)', borderRadius:18, padding:'16px', fontSize:13, color:'var(--ink-mute)' }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
+            <span style={{ fontWeight:700, color:'var(--ink)' }}>Your transformation</span>
+            <button onClick={() => setResult(null)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:16, color:'var(--ink-mute)' }}>✕</button>
+          </div>
+          {result.guruNote && <p style={{ margin:0, fontSize:12, lineHeight:1.5 }}>{result.guruNote}</p>}
+          {result.changes.length > 0 && (
+            <div style={{ marginTop:10, paddingTop:10, borderTop:'1px solid var(--line-soft)' }}>
+              <div style={{ fontWeight:700, color:'var(--ink)', marginBottom:6, fontSize:12 }}>Changes:</div>
+              <ul style={{ margin:0, padding:'0 0 0 14px', fontSize:11 }}>
+                {result.changes.map((c, i) => <li key={i} style={{ marginBottom:4 }}>{c}</li>)}
+              </ul>
+            </div>
+          )}
+        </div>
+        <button onClick={onBack} style={{ width:'100%', padding:'10px 12px', borderRadius:10, border:'1px solid var(--ct-border)', background:'var(--white)', cursor:'pointer', fontWeight:600, fontSize:12 }}>Start over</button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <div style={CT.card}>
+        <div style={{ padding:'14px 16px', borderBottom:'1px solid var(--ct-border-soft)' }}>
+          <h3 style={{ margin:'0 0 12px', fontSize:12, fontWeight:800, color:'var(--ct-label)', letterSpacing:'-0.01em' }}>Reshape</h3>
+
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
+            <div>
+              <label style={{ display:'block', fontSize:11, fontWeight:700, color:'var(--ct-hint)', marginBottom:6 }}>Servings</label>
+              <input type="number" min="1" value={servings} onChange={e => setServings(parseInt(e.target.value) || 1)} style={{ width:'100%', padding:'6px 8px', border:'1px solid var(--ct-border)', borderRadius:6, fontSize:12, boxSizing:'border-box' }}/>
+            </div>
+            <div>
+              <label style={{ display:'block', fontSize:11, fontWeight:700, color:'var(--ct-hint)', marginBottom:6 }}>Max time</label>
+              <input type="number" min="5" value={time} onChange={e => setTime(parseInt(e.target.value) || 60)} style={{ width:'100%', padding:'6px 8px', border:'1px solid var(--ct-border)', borderRadius:6, fontSize:12, boxSizing:'border-box' }}/>
+            </div>
+          </div>
+
+          <div style={{ marginBottom:12 }}>
+            <label style={{ display:'block', fontSize:11, fontWeight:700, color:'var(--ct-hint)', marginBottom:6 }}>Skill</label>
+            <div style={{ display:'flex', gap:6 }}>
+              {['Easy', 'Intermediate', 'Advanced'].map(s => (
+                <button key={s} onClick={() => setSkill(s)} style={{ flex:1, padding:'5px 0', borderRadius:6, border:'1px solid var(--ct-border)', background: skill === s ? 'var(--orange)' : 'var(--white)', color: skill === s ? 'white' : 'var(--ink)', cursor:'pointer', fontSize:11, fontWeight:600 }}>{s}</button>
+              ))}
+            </div>
+          </div>
+
+          <input type="text" placeholder="Cuisine remix…" value={cuisine} onChange={e => setCuisine(e.target.value)} style={{ width:'100%', padding:'6px 8px', border:'1px solid var(--ct-border)', borderRadius:6, fontSize:12, marginBottom:12, boxSizing:'border-box' }}/>
+
+          <div style={{ marginBottom:12 }}>
+            <label style={{ display:'block', fontSize:11, fontWeight:700, color:'var(--ct-hint)', marginBottom:6 }}>Dietary</label>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:5 }}>
+              {['Vegan', 'Vegetarian', 'Gluten-Free', 'Dairy-Free'].map(d => (
+                <button key={d} onClick={() => setDiet(toggleArray(diet, d))} style={{ padding:'4px 8px', borderRadius:999, border:'1px solid var(--ct-border)', background: diet.includes(d) ? 'rgba(240,99,28,.15)' : 'var(--white)', color: diet.includes(d) ? 'var(--orange)' : 'var(--ink)', cursor:'pointer', fontSize:10, fontWeight:600 }}>{d}</button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label style={{ display:'block', fontSize:11, fontWeight:700, color:'var(--ct-hint)', marginBottom:6 }}>Avoid</label>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:5 }}>
+              {['Nuts', 'Eggs', 'Soy', 'Shellfish'].map(a => (
+                <button key={a} onClick={() => setAllergies(toggleArray(allergies, a))} style={{ padding:'4px 8px', borderRadius:999, border:'1px solid var(--ct-border)', background: allergies.includes(a) ? 'rgba(192,57,43,.15)' : 'var(--white)', color: allergies.includes(a) ? '#c0392b' : 'var(--ink)', cursor:'pointer', fontSize:10, fontWeight:600 }}>{a}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {err && <div style={{ padding:'10px 14px', fontSize:12, color:'#c0392b', background:'#fdf0ee' }}>Error: {err}</div>}
+      </div>
+
+      <button onClick={onTransform} disabled={transforming} style={{ width:'100%', padding:'10px 12px', borderRadius:10, border:'none', background:'var(--orange)', color:'white', cursor: transforming ? 'not-allowed' : 'pointer', fontWeight:600, fontSize:12, opacity: transforming ? 0.7 : 1 }}>
+        {transforming ? 'Transforming…' : 'Transform'}
+      </button>
+    </div>
+  );
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 function Translator({ recipeId, onBack, onNavigate }) {
-  const [mode, setMode] = React.useState('find'); // 'find' | 'scan'
+  const [mode, setMode] = React.useState('find'); // 'find' | 'transform' | 'scan'
 
   // Chef Tool state
   const [ingredients,     setIngredients]     = React.useState(new Set());
@@ -471,10 +831,20 @@ function Translator({ recipeId, onBack, onNavigate }) {
   const [mealdbResults,   setMealdbResults]   = React.useState(null);
   const [mealdbLoading,   setMealdbLoading]   = React.useState(false);
   const [mealdbErr,       setMealdbErr]       = React.useState('');
+  const [currentPage,     setCurrentPage]     = React.useState(1);
   const [aiIdeas,         setAiIdeas]         = React.useState(null);
   const [aiLoading,       setAiLoading]       = React.useState(false);
   const [aiErr,           setAiErr]           = React.useState('');
+  const [viewingRecipe,   setViewingRecipe]   = React.useState(null);
+  const [recipeDetails,   setRecipeDetails]   = React.useState(null);
+  const [recipeLoading,   setRecipeLoading]   = React.useState(false);
+  const [excludedIngredients, setExcludedIngredients] = React.useState([]);
   const searchId = React.useRef(0);
+
+  const ITEMS_PER_PAGE = 8;
+  const paginatedResults = mealdbResults
+    ? mealdbResults.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
+    : [];
 
   const switchMode = (m) => {
     setMode(m);
@@ -485,8 +855,8 @@ function Translator({ recipeId, onBack, onNavigate }) {
     const clean = val.trim();
     if (!clean) return;
     if (type === 'cuisine') {
-      // Match to a known MEALDB_CUISINES entry (case-insensitive)
-      const matched = MEALDB_CUISINES.find(c => c.toLowerCase() === clean.toLowerCase()) || clean;
+      // Match to a known RECIPE_API_CUISINES entry (case-insensitive)
+      const matched = RECIPE_API_CUISINES.find(c => c.toLowerCase() === clean.toLowerCase()) || clean;
       setCuisineFilter(matched);
     } else {
       const items = clean.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
@@ -508,16 +878,17 @@ function Translator({ recipeId, onBack, onNavigate }) {
     setPasteText('');
   };
 
-  // Auto-search TheMealDB whenever ingredients or cuisine changes (debounced)
+  // Auto-search recipe-api.com whenever ingredients or cuisine changes (debounced)
   React.useEffect(() => {
     if (ingredients.size === 0 && !cuisineFilter) { setMealdbResults(null); setMealdbErr(''); return; }
     const id = ++searchId.current;
     setMealdbLoading(true);
     setMealdbErr('');
     setAiIdeas(null);
+    setCurrentPage(1); // Reset to page 1 on new search
     const t = setTimeout(async () => {
       try {
-        const results = await searchMealsByIngredients([...ingredients], cuisineFilter);
+        const results = await searchRecipesByIngredientsAndCuisine([...ingredients], cuisineFilter);
         if (searchId.current !== id) return;
         setMealdbResults(results);
       } catch(e) {
@@ -545,28 +916,67 @@ function Translator({ recipeId, onBack, onNavigate }) {
     }
   };
 
+  const onViewRecipe = async (meal) => {
+    setRecipeLoading(true);
+    try {
+      const details = await getRecipeDetail(meal.id);
+      setViewingRecipe(meal);
+      setRecipeDetails(details);
+    } catch(e) {
+      console.error('Error loading recipe:', e);
+      alert('Error loading recipe: ' + e.message);
+    } finally {
+      setRecipeLoading(false);
+    }
+  };
+
   return (
     <div className="dt-translator">
+      {/* Offcanvas modal for mobile recipe view */}
+      {viewingRecipe && recipeDetails && (
+        <>
+          <div className={`dt-offcanvas-backdrop ${viewingRecipe ? 'show' : ''}`} onClick={() => { setViewingRecipe(null); setRecipeDetails(null); }}/>
+          <div className={`dt-offcanvas ${viewingRecipe ? 'show' : ''}`}>
+            <div className="dt-offcanvas-header">
+              <div className="dt-offcanvas-handle"/>
+            </div>
+            <div className="dt-offcanvas-body">
+              <CompactRecipeView recipe={viewingRecipe} details={recipeDetails} onBack={() => { setViewingRecipe(null); setRecipeDetails(null); }} onTransform={(excluded) => { setExcludedIngredients(excluded); setMode('transform'); }} searchedIngredients={[...ingredients]} showTransformOptions={true} />
+            </div>
+            <div className="dt-offcanvas-footer">
+              <button onClick={() => { setViewingRecipe(null); setRecipeDetails(null); }} style={{ flex:1, padding:'10px 12px', borderRadius:10, border:'1px solid var(--ct-border)', background:'var(--white)', cursor:'pointer', fontWeight:600, fontSize:12 }}>Close</button>
+              <button onClick={() => setMode('transform')} style={{ flex:1, padding:'10px 12px', borderRadius:10, border:'none', background:'var(--orange)', color:'white', cursor:'pointer', fontWeight:600, fontSize:12 }}>Transform</button>
+            </div>
+          </div>
+        </>
+      )}
+
       <div className="dt-translator-left">
-        <div style={{ fontSize:13, color:'var(--ink-mute)' }}>
-          <a onClick={onBack} style={{ cursor:'pointer' }}>← Back</a>
-        </div>
-        {mode === 'find' ? (
-          <div>
-            <div className="dt-eyebrow">Chef Tool</div>
-            <h1 className="dt-serif" style={{ fontSize:32, lineHeight:1.05, margin:'8px 0 12px', letterSpacing:'-0.02em' }}>What's in your kitchen?</h1>
-            <p style={{ fontSize:14, color:'var(--ink-soft)', lineHeight:1.6, margin:0 }}>
-              Add your ingredients one by one, or paste a full recipe and we'll pull them out automatically. The guru finds what you can cook.
-            </p>
-          </div>
+        {viewingRecipe && recipeDetails ? (
+          <CompactRecipeView recipe={viewingRecipe} details={recipeDetails} onBack={() => { setViewingRecipe(null); setRecipeDetails(null); }} onTransform={() => setMode('transform')} searchedIngredients={[...ingredients]} />
         ) : (
-          <div>
-            <div className="dt-eyebrow">Food Scanner</div>
-            <h1 className="dt-serif" style={{ fontSize:32, lineHeight:1.05, margin:'8px 0 12px', letterSpacing:'-0.02em' }}>Know what you're eating.</h1>
-            <p style={{ fontSize:14, color:'var(--ink-soft)', lineHeight:1.6, margin:0 }}>
-              Scan any packaged food barcode. The guru looks up the product and breaks down exactly how healthy it is — including what it means for kids.
-            </p>
-          </div>
+          <>
+            <div style={{ fontSize:13, color:'var(--ink-mute)' }}>
+              <a onClick={onBack} style={{ cursor:'pointer' }}>← Back</a>
+            </div>
+            {mode === 'find' ? (
+              <div>
+                <div className="dt-eyebrow">Chef Tool</div>
+                <h1 className="dt-serif" style={{ fontSize:32, lineHeight:1.05, margin:'8px 0 12px', letterSpacing:'-0.02em' }}>What's in your kitchen?</h1>
+                <p style={{ fontSize:14, color:'var(--ink-soft)', lineHeight:1.6, margin:0 }}>
+                  Add your ingredients one by one, or paste a full recipe and we'll pull them out automatically. The guru finds what you can cook.
+                </p>
+              </div>
+            ) : (
+              <div>
+                <div className="dt-eyebrow">Food Scanner</div>
+                <h1 className="dt-serif" style={{ fontSize:32, lineHeight:1.05, margin:'8px 0 12px', letterSpacing:'-0.02em' }}>Know what you're eating.</h1>
+                <p style={{ fontSize:14, color:'var(--ink-soft)', lineHeight:1.6, margin:0 }}>
+                  Scan any packaged food barcode. The guru looks up the product and breaks down exactly how healthy it is — including what it means for kids.
+                </p>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -575,6 +985,7 @@ function Translator({ recipeId, onBack, onNavigate }) {
         <div className="dt-mode-tabs">
           {[
             { id:'find', label:'Chef Tool', sub:'Cook what you have', icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 6a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6Z"/><path d="M5 10h14"/><path d="M15 7v2"/></svg> },
+            { id:'transform', label:'Transform', sub:'Reshape a recipe', icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="9"/></svg> },
             { id:'scan', label:'Scanner',    sub:'Read food labels fast', icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg> },
           ].map(({ id, label, sub, icon }) => (
             <button
@@ -671,14 +1082,58 @@ function Translator({ recipeId, onBack, onNavigate }) {
             )}
 
             {!mealdbLoading && mealdbResults !== null && (
-              <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+              <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
                 {mealdbResults.length > 0 ? (
                   <>
                     <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', padding:'0 2px' }}>
                       <h3 style={{ margin:0, fontWeight:800, letterSpacing:'-0.02em', fontSize:14, color:'var(--ct-label)' }}>Recipes</h3>
-                      <span style={{ fontSize:12, color:'var(--ct-hint)' }}>{mealdbResults.length} found</span>
+                      <span style={{ fontSize:12, color:'var(--ct-hint)' }}>
+                        {(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, mealdbResults.length)} of {mealdbResults.length}
+                      </span>
                     </div>
-                    {mealdbResults.map(meal => <MealDBCard key={meal.id} meal={meal}/>)}
+                    <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))', gap:16 }}>
+                      {paginatedResults.map(meal => <MealDBCard key={meal.id} meal={meal} onViewRecipe={onViewRecipe}/>)}
+                    </div>
+                    {/* Pagination controls */}
+                    {mealdbResults.length > ITEMS_PER_PAGE && (
+                      <div style={{ display:'flex', gap:8, justifyContent:'center', padding:'8px 0', borderTop:'1px solid var(--ct-border-soft)' }}>
+                        <button
+                          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                          disabled={currentPage === 1}
+                          style={{
+                            padding:'6px 12px',
+                            borderRadius:6,
+                            border:'1px solid var(--ct-border)',
+                            background:'var(--white)',
+                            cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                            opacity: currentPage === 1 ? 0.5 : 1,
+                            fontSize:12,
+                            fontWeight:600,
+                          }}
+                        >
+                          ← Prev
+                        </button>
+                        <span style={{ fontSize:12, color:'var(--ct-hint)', display:'flex', alignItems:'center', padding:'0 8px' }}>
+                          Page {currentPage}
+                        </span>
+                        <button
+                          onClick={() => setCurrentPage(p => Math.min(Math.ceil(mealdbResults.length / ITEMS_PER_PAGE), p + 1))}
+                          disabled={currentPage === Math.ceil(mealdbResults.length / ITEMS_PER_PAGE)}
+                          style={{
+                            padding:'6px 12px',
+                            borderRadius:6,
+                            border:'1px solid var(--ct-border)',
+                            background:'var(--white)',
+                            cursor: currentPage === Math.ceil(mealdbResults.length / ITEMS_PER_PAGE) ? 'not-allowed' : 'pointer',
+                            opacity: currentPage === Math.ceil(mealdbResults.length / ITEMS_PER_PAGE) ? 0.5 : 1,
+                            fontSize:12,
+                            fontWeight:600,
+                          }}
+                        >
+                          Next →
+                        </button>
+                      </div>
+                    )}
                   </>
                 ) : (
                   <div style={{ fontSize:13, color:'var(--ct-muted)', padding:'8px 2px' }}>No recipes found for those ingredients.</div>
@@ -722,6 +1177,31 @@ function Translator({ recipeId, onBack, onNavigate }) {
                     ))}
                   </div>
                 )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Transform panel (when recipe is viewed) ── */}
+        {mode === 'find' && viewingRecipe && recipeDetails && (
+          <div style={{ marginTop: viewingRecipe ? 24 : -9999, opacity: viewingRecipe ? 1 : 0, pointerEvents: viewingRecipe ? 'auto' : 'none', transition: 'opacity 240ms cubic-bezier(0.22,1,0.36,1), margin-top 240ms cubic-bezier(0.22,1,0.36,1)' }}>
+            <h3 style={{ margin:'0 0 16px 2px', fontWeight:800, letterSpacing:'-0.02em', fontSize:14, color:'var(--ct-label)' }}>Transform</h3>
+            <TransformPanel recipe={viewingRecipe} recipeDetails={recipeDetails} onBack={() => { setViewingRecipe(null); setRecipeDetails(null); }} excludedIngredients={excludedIngredients} />
+          </div>
+        )}
+
+        {/* ── Transform mode ── */}
+        {mode === 'transform' && (
+          <div className="fadeInUp" style={{ display:'flex', flexDirection:'column', gap:16 }}>
+            {viewingRecipe && recipeDetails ? (
+              <>
+                <h3 style={{ margin:'0 0 16px 2px', fontWeight:800, letterSpacing:'-0.02em', fontSize:14, color:'var(--ct-label)' }}>Transform "{recipeDetails.title}"</h3>
+                <TransformPanel recipe={viewingRecipe} recipeDetails={recipeDetails} onBack={() => { setViewingRecipe(null); setRecipeDetails(null); }} excludedIngredients={excludedIngredients} />
+              </>
+            ) : (
+              <div style={{ textAlign:'center', padding:'24px 0', color:'var(--ct-muted)', fontSize:14 }}>
+                <p style={{ margin:'0 0 12px' }}>No recipe selected</p>
+                <button onClick={() => setMode('find')} style={{ padding:'10px 16px', borderRadius:10, border:'1px solid var(--ct-border)', background:'var(--white)', cursor:'pointer', fontWeight:600, fontSize:12 }}>← Back to search</button>
               </div>
             )}
           </div>

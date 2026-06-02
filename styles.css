@@ -265,14 +265,14 @@ a { color: inherit; text-decoration: none; }
 
 /* ── Translator ── */
 .dt-translator { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 72px); background: var(--cream); }
-.dt-translator-left { padding: 48px 48px 48px 56px; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 28px; background: var(--cream-2); }
+.dt-translator-left { padding: 48px 48px 48px 56px; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 28px; background: var(--cream-2); overflow-y: auto; }
 .dt-translator-right { padding: 48px 56px 48px 48px; background: var(--cream); position: relative; }
 .dt-translator-section { background: var(--white); border: 1px solid var(--line-soft); border-radius: 22px; padding: 22px 24px; }
 .dt-translator-section h4 { font-family: var(--display); font-weight: 500; font-size: 17px; letter-spacing: -0.005em; margin: 0 0 4px; }
 .dt-translator-section .sub { font-size: 12px; color: var(--ink-mute); margin-bottom: 14px; }
 
 /* Chef Tool / Scanner mode picker */
-.dt-mode-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.dt-mode-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
 .dt-mode-tab {
   position: relative;
   border-radius: 18px;
@@ -382,6 +382,27 @@ textarea.dt-input { height: auto; padding: 12px 14px; resize: none; font-family:
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .fadeInUp { animation: fadeInUp 240ms cubic-bezier(0.22,1,0.36,1) both; }
 
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+.fadeOut { animation: fadeOut 180ms cubic-bezier(0.22,1,0.36,1) forwards; }
+
+.transition-fade { transition: opacity 240ms cubic-bezier(0.22,1,0.36,1); }
+
+/* ── Offcanvas modal (bottom sheet) ── */
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes slideDown { from { transform: translateY(0); } to { transform: translateY(100%); } }
+
+.dt-offcanvas-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 999; animation: fadeInUp 240ms cubic-bezier(0.22,1,0.36,1) forwards; }
+.dt-offcanvas-backdrop.show { display: block; }
+
+.dt-offcanvas { display: none !important; position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-radius: 20px 20px 0 0; z-index: 1000; max-height: 90vh; overflow-y: auto; animation: slideUp 240ms cubic-bezier(0.22,1,0.36,1) forwards; }
+.dt-offcanvas.show { display: flex !important; flex-direction: column; }
+
+.dt-offcanvas-header { padding: 16px; border-bottom: 1px solid var(--line-soft); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.dt-offcanvas-body { padding: 16px; flex: 1; overflow-y: auto; }
+.dt-offcanvas-footer { padding: 16px; border-top: 1px solid var(--line-soft); display: flex; gap: 8px; flex-shrink: 0; }
+
+.dt-offcanvas-handle { width: 40px; height: 4px; background: var(--line); border-radius: 2px; margin: 0 auto 12px; }
+
 /* ── Misc ── */
 .dot { width: 3px; height: 3px; border-radius: 99px; background: var(--ink-mute); display: inline-block; margin: 0 6px; vertical-align: middle; }
 .stars { display: inline-flex; gap: 2px; }
@@ -422,7 +443,10 @@ textarea.dt-input { height: auto; padding: 12px 14px; resize: none; font-family:
   .dt-side-stick { position: static; }
   .dt-translator { grid-template-columns: 1fr; }
   .dt-translator-left { display: none; }
-  .dt-translator-right { padding: 36px 32px; }
+  .dt-translator-right { padding: 28px 20px; }
+  .dt-offcanvas-backdrop { display: none !important; }
+  .dt-offcanvas { display: none !important; }
+  .dt-offcanvas.show { display: none !important; }
   .dt-footer { padding: 40px 32px 28px; grid-template-columns: 1fr 1fr; gap: 32px; }
   .dt-reviews-intro { grid-template-columns: 1fr !important; gap: 24px !important; }
   .dt-review-featured { grid-template-columns: 1fr; gap: 32px; }
@@ -470,6 +494,10 @@ textarea.dt-input { height: auto; padding: 12px 14px; resize: none; font-family:
   .dt-step p { font-size: 15px; }
   .dt-translator-left { display: none; }
   .dt-translator-right { padding: 28px 20px; }
+  .dt-offcanvas-backdrop { display: none !important; }
+  .dt-offcanvas-backdrop.show { display: block !important; }
+  .dt-offcanvas { display: none !important; max-height: 85vh; }
+  .dt-offcanvas.show { display: flex !important; flex-direction: column; }
   .dt-sticky-cta { margin: 20px -20px 0; padding: 14px 20px 18px; }
   .dt-footer { padding: 36px 20px 24px; grid-template-columns: 1fr; gap: 28px; }
   .dt-reviews-grid { grid-template-columns: 1fr; }

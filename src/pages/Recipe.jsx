@@ -101,6 +101,60 @@ function Recipe({ recipeId, onBack, onOpenTranslator }) {
             <div style={{ color:'var(--orange)', fontWeight:700, fontSize:14 }}>Open →</div>
           </button>
 
+          {/* Ingredients */}
+          <h2 className="sub">Ingredients</h2>
+          <div className="dt-side-card" style={{ marginTop: 0, marginBottom: 40 }}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
+              <h4 style={{ margin:0 }}>For {servings} servings</h4>
+              <div className="dt-stepper">
+                <button onClick={() => setServings(s => Math.max(1, s - 1))}>−</button>
+                <span className="val">{servings}</span>
+                <button onClick={() => setServings(s => s + 1)}>+</button>
+              </div>
+            </div>
+            {has ? (
+              <ul style={{ padding: 0, margin: 0, listStyle: 'none' }}>
+                {recipe.ingredients.map((ing, i) => (
+                  <li
+                    key={i}
+                    className={`ing-row ${checked[i] ? 'checked' : ''}`}
+                    onClick={() => toggle(i)}
+                    style={{
+                      display:'grid',
+                      gridTemplateColumns:'22px 80px 1fr',
+                      alignItems:'flex-start',
+                      gap:12,
+                      padding:'13px 0',
+                      borderBottom:'1px solid var(--line-soft)',
+                      fontSize:'14.5px',
+                      lineHeight:1.4,
+                      cursor:'pointer'
+                    }}
+                  >
+                    <span
+                      className={`ing-check ${checked[i] ? 'on' : ''}`}
+                      style={{
+                        width:20,
+                        height:20,
+                        borderRadius:6,
+                        border:'1.5px solid var(--line)',
+                        background: checked[i] ? 'var(--navy)' : 'var(--white)',
+                        marginTop:1,
+                        display:'flex',
+                        alignItems:'center',
+                        justifyContent:'center'
+                      }}
+                    >
+                      {checked[i] && <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="var(--cream)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                    </span>
+                    <span style={{ fontFamily:'var(--mono)', color:'var(--orange)', fontWeight:600, fontSize:13 }}>{scaleQty(ing.qty, servings / recipe.servings)}</span>
+                    <span style={{ color: checked[i] ? 'var(--ink-mute)' : 'inherit', textDecoration: checked[i] ? 'line-through' : 'none' }}>{ing.item}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : <p style={{ fontSize:14, color:'var(--ink-mute)' }}>Coming soon.</p>}
+          </div>
+
           {/* Video */}
           {embedUrl && (
             <React.Fragment>
@@ -144,31 +198,7 @@ function Recipe({ recipeId, onBack, onOpenTranslator }) {
         {/* Sidebar */}
         <aside className="dt-side-stick">
           <div className="dt-side-card">
-            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
-              <h4 style={{ margin:0 }}>Ingredients</h4>
-              <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                <span style={{ fontSize:12, color:'var(--ink-mute)' }}>Serves</span>
-                <div className="dt-stepper">
-                  <button onClick={() => setServings(s => Math.max(1, s - 1))}>−</button>
-                  <span className="val">{servings}</span>
-                  <button onClick={() => setServings(s => s + 1)}>+</button>
-                </div>
-              </div>
-            </div>
-            {has ? (
-              <ul className="ing-list">
-                {recipe.ingredients.map((ing, i) => (
-                  <li key={i} className={`ing-row ${checked[i] ? 'checked' : ''}`} onClick={() => toggle(i)} style={{ cursor:'pointer' }}>
-                    <span className={`ing-check ${checked[i] ? 'on' : ''}`}>
-                      {checked[i] && <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="var(--cream)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-                    </span>
-                    <span className="ing-qty">{scaleQty(ing.qty, servings / recipe.servings)}</span>
-                    <span className="ing-name">{ing.item}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : <p style={{ fontSize:14, color:'var(--ink-mute)' }}>Coming soon.</p>}
-            <button onClick={() => onOpenTranslator(recipe.id)} className="dt-btn primary" style={{ width:'100%', marginTop:18 }}>
+            <button onClick={() => onOpenTranslator(recipe.id)} className="dt-btn primary" style={{ width:'100%' }}>
               <Icon.sparkle/> Open Chef Tool
             </button>
             <button className="dt-btn ghost" style={{ width:'100%', marginTop:10 }}>
