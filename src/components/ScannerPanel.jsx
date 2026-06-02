@@ -337,7 +337,7 @@ function ScannerPanel() {
 
       {/* Secondary: file upload */}
       {hasDetector && (
-        <label style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:10, padding:'14px 24px', borderRadius:12, border:'1.5px dashed var(--line)', cursor:'pointer', fontSize:15, fontWeight:600, color:'var(--ink-soft)', background:'var(--cream)' }}>
+        <label className="dt-scanner-upload">
           <span style={{ fontSize:18 }}>🖼</span> Upload a photo of the barcode
           <input type="file" accept="image/*" onChange={onFileChange} style={{ display:'none' }}/>
         </label>

@@ -1,4 +1,27 @@
-function Nav({ route, search, setSearch, onHome, onOpenTranslator, onOpenReviews, onOpenRecipeList, onOpenRecipe, onOpenReview, onOpenMap }) {
+function ThemeSwitch({ theme, onSetTheme }) {
+  return (
+    <div className="dt-theme-switch" role="group" aria-label="Color theme">
+      <button
+        type="button"
+        className={theme === 'light' ? 'active' : ''}
+        onClick={() => onSetTheme('light')}
+        aria-pressed={theme === 'light'}
+      >
+        Light
+      </button>
+      <button
+        type="button"
+        className={theme === 'dark' ? 'active' : ''}
+        onClick={() => onSetTheme('dark')}
+        aria-pressed={theme === 'dark'}
+      >
+        Dark
+      </button>
+    </div>
+  );
+}
+
+function Nav({ route, search, setSearch, theme = 'light', onSetTheme = () => {}, onHome, onOpenTranslator, onOpenReviews, onOpenRecipeList, onOpenRecipe, onOpenReview, onOpenMap }) {
   const [menuOpen,   setMenuOpen]   = React.useState(false);
   const [searchFocus, setSearchFocus] = React.useState(false);
   const searchRef = React.useRef(null);
@@ -89,7 +112,7 @@ function Nav({ route, search, setSearch, onHome, onOpenTranslator, onOpenReviews
             onKeyDown={handleKeyDown}
           />
           {showDropdown && (
-            <div style={{ position:'absolute', top:'calc(100% + 8px)', left:0, right:0, background:'var(--white)', border:'1px solid var(--line-soft)', borderRadius:16, boxShadow:'0 8px 32px rgba(14,26,47,0.12)', zIndex:200, overflow:'hidden' }}>
+            <div style={{ position:'absolute', top:'calc(100% + 8px)', left:0, right:0, background:'var(--white)', border:'1px solid var(--line-soft)', borderRadius:16, boxShadow:'0 8px 32px rgba(var(--shadow-rgb),0.12)', zIndex:200, overflow:'hidden' }}>
               {!hasResults ? (
                 <div style={{ padding:'16px 18px', fontSize:13, color:'var(--ink-mute)' }}>No results for "{search}"</div>
               ) : (
@@ -146,6 +169,10 @@ function Nav({ route, search, setSearch, onHome, onOpenTranslator, onOpenReviews
           )}
         </div>
 
+        <div className="dt-nav-right">
+          <ThemeSwitch theme={theme} onSetTheme={onSetTheme}/>
+        </div>
+
         <button
           className="dt-nav-hamburger"
           onClick={() => setMenuOpen(o => !o)}
@@ -171,6 +198,10 @@ function Nav({ route, search, setSearch, onHome, onOpenTranslator, onOpenReviews
             <a className={`dt-nav-mobile-link ${isTranslator ? 'active' : ''}`} onClick={close(onOpenTranslator)}>
               <Icon.sparkle style={{ color:'var(--orange)', width:16, height:16 }}/> Chef Tool
             </a>
+            <div className="dt-nav-mobile-footer">
+              <span style={{ fontSize:13, fontWeight:600, color:'var(--ink-mute)' }}>Theme</span>
+              <ThemeSwitch theme={theme} onSetTheme={onSetTheme}/>
+            </div>
           </div>
         </React.Fragment>
       )}

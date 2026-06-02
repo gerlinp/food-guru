@@ -26,6 +26,16 @@ function routeToHash(route) {
 function App() {
   const [route,  setRoute]  = React.useState(() => parseHash(window.location.hash));
   const [search, setSearch] = React.useState('');
+  const [theme, setTheme]   = React.useState(() => window.FoodGuruTheme?.getTheme() || 'light');
+
+  React.useEffect(() => {
+    initializeSync?.().catch(err => console.error('Sync init failed:', err));
+  }, []);
+
+  const onSetTheme = next => {
+    window.FoodGuruTheme.setTheme(next);
+    setTheme(next);
+  };
 
   const navigate = route => {
     setRoute(route);
@@ -56,6 +66,8 @@ function App() {
         route={route}
         search={search}
         setSearch={setSearch}
+        theme={theme}
+        onSetTheme={onSetTheme}
         onHome={goHome}
         onOpenTranslator={() => openTranslator()}
         onOpenReviews={openReviews}

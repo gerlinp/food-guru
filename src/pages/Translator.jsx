@@ -1,23 +1,23 @@
 // ── Chef Tool design tokens ──────────────────────────────────────────────────
 const CT = {
-  card:        { background:'rgba(255,255,255,.88)', border:'1px solid rgba(14,26,47,.10)', borderRadius:22, boxShadow:'0 10px 26px rgba(0,0,0,.09)' },
-  section:     { padding:'14px 16px', borderBottom:'1px solid rgba(14,26,47,.08)' },
+  card:        { background:'var(--ct-card-bg)', border:'1px solid var(--ct-border)', borderRadius:22, boxShadow:'0 10px 26px rgba(0,0,0,.09)' },
+  section:     { padding:'14px 16px', borderBottom:'1px solid var(--ct-border-soft)' },
   sectionLast: { padding:'14px 16px' },
   labelRow:    { display:'flex', alignItems:'baseline', justifyContent:'space-between', gap:10, marginBottom:8 },
-  label:       { fontWeight:700, letterSpacing:'-0.01em', fontSize:13, color:'#0b1220' },
-  hint:        { fontSize:12, color:'#666' },
+  label:       { fontWeight:700, letterSpacing:'-0.01em', fontSize:13, color:'var(--ct-label)' },
+  hint:        { fontSize:12, color:'var(--ct-hint)' },
   chip: (active) => ({
     display:'inline-flex', alignItems:'center', gap:6, padding:'7px 10px',
     borderRadius:999, cursor:'pointer', fontSize:12, fontWeight:600, letterSpacing:'-0.01em',
-    border:      active ? '1px solid rgba(240,99,28,.34)' : '1px solid rgba(14,26,47,.10)',
-    background:  active ? 'rgba(240,99,28,.12)'           : 'rgba(250,245,236,.78)',
-    color:       active ? '#f0631c'                        : '#1a305c',
+    border:      active ? '1px solid rgba(240,99,28,.34)' : '1px solid var(--ct-border)',
+    background:  active ? 'rgba(240,99,28,.12)'           : 'var(--ct-chip-idle-bg)',
+    color:       active ? 'var(--orange)'                 : 'var(--ct-chip-idle-color)',
     boxShadow:   active ? '0 8px 20px rgba(240,99,28,.10)': 'none',
     transform:   active ? 'translateY(-1px)'               : 'none',
     transition:  'all .16s ease',
   }),
-  kicker:      { display:'inline-flex', alignItems:'center', gap:8, padding:'6px 10px', borderRadius:999, background:'rgba(14,26,47,.06)', border:'1px solid rgba(14,26,47,.08)', color:'#142647', fontSize:12, fontWeight:600, letterSpacing:'-0.01em', marginBottom:12 },
-  resultGroup: { background:'rgba(255,255,255,.88)', border:'1px solid rgba(14,26,47,.10)', borderRadius:18, boxShadow:'0 8px 22px rgba(0,0,0,.07)', overflow:'hidden' },
+  kicker:      { display:'inline-flex', alignItems:'center', gap:8, padding:'6px 10px', borderRadius:999, background:'var(--ct-kicker-bg)', border:'1px solid var(--ct-border-soft)', color:'var(--ct-kicker-color)', fontSize:12, fontWeight:600, letterSpacing:'-0.01em', marginBottom:12 },
+  resultGroup: { background:'var(--ct-card-bg)', border:'1px solid var(--ct-border)', borderRadius:18, boxShadow:'0 8px 22px rgba(0,0,0,.07)', overflow:'hidden' },
 };
 
 function CTChip({ label, active, onClick }) {
@@ -33,8 +33,8 @@ function ResultGroup({ title, hint, children }) {
   return (
     <div style={{ marginBottom:16 }}>
       <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', gap:10, marginBottom:8, padding:'0 2px' }}>
-        <h3 style={{ margin:0, fontWeight:800, letterSpacing:'-0.02em', fontSize:14, color:'#0b1220' }}>{title}</h3>
-        {hint && <span style={{ fontSize:12, color:'#666' }}>{hint}</span>}
+        <h3 style={{ margin:0, fontWeight:800, letterSpacing:'-0.02em', fontSize:14, color:'var(--ct-label)' }}>{title}</h3>
+        {hint && <span style={{ fontSize:12, color:'var(--ct-hint)' }}>{hint}</span>}
       </div>
       <div style={CT.resultGroup}>{children}</div>
     </div>
@@ -101,15 +101,15 @@ function IngredientInput({ value, onChange, onAdd, placeholder }) {
           onChange={e => onChange(e.target.value)}
           onKeyDown={onKeyDown}
           onFocus={e => { setFocused(true); e.target.style.borderColor='rgba(240,99,28,.40)'; e.target.style.boxShadow='0 0 0 4px rgba(240,99,28,.10)'; }}
-          onBlur={e  => { setTimeout(() => setFocused(false), 150); e.target.style.borderColor='rgba(14,26,47,.14)'; e.target.style.boxShadow='none'; }}
+          onBlur={e  => { setTimeout(() => setFocused(false), 150); e.target.style.borderColor='var(--ct-border-input)'; e.target.style.boxShadow='none'; }}
           placeholder={placeholder}
-          style={{ width:'100%', padding:'10px 12px', borderRadius:12, border:'1px solid rgba(14,26,47,.14)', background:'rgba(250,245,236,.55)', outline:'none', fontSize:14, color:'#161616', boxSizing:'border-box', transition:'border-color .18s ease,box-shadow .18s ease' }}
+          style={{ width:'100%', padding:'10px 12px', borderRadius:12, border:'1px solid var(--ct-border-input)', background:'var(--ct-input-bg)', outline:'none', fontSize:14, color:'var(--ct-body)', boxSizing:'border-box', transition:'border-color .18s ease,box-shadow .18s ease' }}
         />
         {showDropdown && (
-          <div style={{ position:'absolute', top:'calc(100% + 6px)', left:0, right:0, background:'#fff', border:'1px solid rgba(14,26,47,.12)', borderRadius:12, boxShadow:'0 8px 24px rgba(0,0,0,.10)', zIndex:9999, overflow:'hidden' }}>
+          <div style={{ position:'absolute', top:'calc(100% + 6px)', left:0, right:0, background:'var(--ct-dropdown-bg)', border:'1px solid var(--ct-border)', borderRadius:12, boxShadow:'0 8px 24px rgba(0,0,0,.10)', zIndex:9999, overflow:'hidden' }}>
             {suggestions.map((s, i) => (
               <button key={s.label} onMouseDown={() => pick(s)}
-                style={{ width:'100%', padding:'9px 14px', textAlign:'left', background: i === cursor ? 'rgba(240,99,28,.08)' : 'transparent', border:'none', cursor:'pointer', fontSize:13.5, color: i === cursor ? '#f0631c' : '#161616', borderBottom: i < suggestions.length - 1 ? '1px solid rgba(14,26,47,.06)' : 'none', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                style={{ width:'100%', padding:'9px 14px', textAlign:'left', background: i === cursor ? 'rgba(240,99,28,.08)' : 'transparent', border:'none', cursor:'pointer', fontSize:13.5, color: i === cursor ? 'var(--orange)' : 'var(--ct-body)', borderBottom: i < suggestions.length - 1 ? '1px solid var(--ct-border-soft)' : 'none', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                 <span>{s.label}</span>
                 {s.type === 'cuisine' && (
                   <span style={{ fontSize:11, fontWeight:700, color:'#8a6fff', background:'rgba(138,111,255,.10)', padding:'2px 7px', borderRadius:99 }}>cuisine</span>
@@ -148,16 +148,16 @@ function Translating({ label }) {
       </div>
       {/* Title */}
       <div style={{ textAlign:'center' }}>
-        <h2 style={{ fontFamily:'var(--display)', fontSize:28, fontWeight:800, letterSpacing:'-0.04em', lineHeight:.97, margin:'0 0 8px', color:'#0b1220' }}>
+        <h2 style={{ fontFamily:'var(--display)', fontSize:28, fontWeight:800, letterSpacing:'-0.04em', lineHeight:.97, margin:'0 0 8px', color:'var(--ct-label)' }}>
           {label === 'find' ? 'Searching the kitchen…' : 'Reshaping your recipe'}
         </h2>
-        <p style={{ fontSize:13, color:'#8a8a8a', margin:0 }}>This usually takes about 8 seconds.</p>
+        <p style={{ fontSize:13, color:'var(--ct-muted)', margin:0 }}>This usually takes about 8 seconds.</p>
       </div>
       {/* Progress steps */}
       <div style={{ width:'100%', maxWidth:400, display:'flex', flexDirection:'column', gap:10 }}>
         {steps.map((s, i) => (
           <div key={i} style={{ display:'flex', alignItems:'center', gap:12, fontSize:13, color:i <= active ? '#161616' : '#aeaeae', opacity:i <= active ? 1 : 0.5, transition:'opacity 220ms ease,color 220ms ease' }}>
-            <span style={{ width:22, height:22, borderRadius:99, border:'1.5px solid', borderColor:i <= active ? '#f0631c' : 'rgba(14,26,47,.14)', background:i < active ? '#f0631c' : 'transparent', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'all 220ms ease' }}>
+            <span style={{ width:22, height:22, borderRadius:99, border:'1.5px solid', borderColor:i <= active ? '#f0631c' : 'var(--ct-border-input)', background:i < active ? '#f0631c' : 'transparent', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'all 220ms ease' }}>
               {i < active  && <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>}
               {i === active && <span style={{ width:7, height:7, borderRadius:99, background:'#f0631c' }}/>}
             </span>
@@ -186,16 +186,16 @@ function GeneratedRecipeCard({ idea, availableIngredients }) {
   };
 
   return (
-    <div style={{ background:'rgba(255,255,255,.88)', border:'1px solid rgba(14,26,47,.10)', borderRadius:20, overflow:'hidden', boxShadow:'0 8px 22px rgba(0,0,0,.07)' }}>
-      <div style={{ padding:'14px 16px', borderBottom:(phase==='done'&&fullRecipe)?'1px solid rgba(14,26,47,.08)':'none' }}>
+    <div style={{ background:'var(--ct-card-bg)', border:'1px solid var(--ct-border)', borderRadius:20, overflow:'hidden', boxShadow:'0 8px 22px rgba(0,0,0,.07)' }}>
+      <div style={{ padding:'14px 16px', borderBottom:(phase==='done'&&fullRecipe)?'1px solid var(--ct-border-soft)':'none' }}>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:12 }}>
           <div style={{ minWidth:0 }}>
-            <h3 className="dt-serif" style={{ fontSize:18, margin:'0 0 4px', letterSpacing:'-0.03em', color:'#0b1220' }}>{idea.title}</h3>
-            <p style={{ margin:0, fontSize:13, color:'#515151', lineHeight:1.4 }}>{idea.description}</p>
+            <h3 className="dt-serif" style={{ fontSize:18, margin:'0 0 4px', letterSpacing:'-0.03em', color:'var(--ct-label)' }}>{idea.title}</h3>
+            <p style={{ margin:0, fontSize:13, color:'var(--ct-text-soft)', lineHeight:1.4 }}>{idea.description}</p>
           </div>
           <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:5, flexShrink:0 }}>
-            <span style={{ fontFamily:'var(--mono)', fontSize:11, fontWeight:700, padding:'5px 8px', borderRadius:999, background:'rgba(255,255,255,.80)', border:'1px solid rgba(14,26,47,.10)', color:'#8a8a8a', whiteSpace:'nowrap' }}>{idea.estimatedMinutes} min</span>
-            <span style={{ fontFamily:'var(--mono)', fontSize:11, fontWeight:700, padding:'5px 8px', borderRadius:999, background:'rgba(255,255,255,.80)', border:'1px solid rgba(14,26,47,.10)', color:'#8a8a8a' }}>{idea.difficulty}</span>
+            <span style={{ fontFamily:'var(--mono)', fontSize:11, fontWeight:700, padding:'5px 8px', borderRadius:999, background:'rgba(255,255,255,.80)', border:'1px solid var(--ct-border)', color:'var(--ct-muted)', whiteSpace:'nowrap' }}>{idea.estimatedMinutes} min</span>
+            <span style={{ fontFamily:'var(--mono)', fontSize:11, fontWeight:700, padding:'5px 8px', borderRadius:999, background:'rgba(255,255,255,.80)', border:'1px solid var(--ct-border)', color:'var(--ct-muted)' }}>{idea.difficulty}</span>
           </div>
         </div>
         {idea.uses && idea.uses.length > 0 && (
@@ -208,7 +208,7 @@ function GeneratedRecipeCard({ idea, availableIngredients }) {
         <div style={{ marginTop:12 }}>
           {phase === 'idle' && <button onClick={onExpand} className="dt-btn ghost sm">See full recipe →</button>}
           {phase === 'loading' && (
-            <div style={{ fontSize:13, color:'#8a8a8a', display:'flex', alignItems:'center', gap:8 }}>
+            <div style={{ fontSize:13, color:'var(--ct-muted)', display:'flex', alignItems:'center', gap:8 }}>
               <div className="dt-spin" style={{ width:14, height:14, borderRadius:'50%', background:'conic-gradient(#f0631c,transparent 65%)', WebkitMask:'radial-gradient(closest-side,transparent 60%,#000 62%)', mask:'radial-gradient(closest-side,transparent 60%,#000 62%)' }}/>
               Generating recipe…
             </div>
@@ -218,11 +218,11 @@ function GeneratedRecipeCard({ idea, availableIngredients }) {
       </div>
       {phase === 'done' && fullRecipe && (
         <div style={{ padding:'0 16px 16px' }}>
-          <div style={{ borderBottom:'1px solid rgba(14,26,47,.08)', padding:'12px 0' }}>
-            <h4 style={{ fontWeight:800, letterSpacing:'-0.02em', fontSize:13, color:'#0b1220', margin:'0 0 8px' }}>Ingredients</h4>
+          <div style={{ borderBottom:'1px solid var(--ct-border-soft)', padding:'12px 0' }}>
+            <h4 style={{ fontWeight:800, letterSpacing:'-0.02em', fontSize:13, color:'var(--ct-label)', margin:'0 0 8px' }}>Ingredients</h4>
             <ul style={{ listStyle:'none', margin:0, padding:0 }}>
               {fullRecipe.ingredients.map((ing, i) => (
-                <li key={i} style={{ display:'grid', gridTemplateColumns:'80px 1fr', gap:10, padding:'7px 0', borderBottom:i < fullRecipe.ingredients.length-1 ? '1px solid rgba(14,26,47,.06)' : 'none', fontSize:13 }}>
+                <li key={i} style={{ display:'grid', gridTemplateColumns:'80px 1fr', gap:10, padding:'7px 0', borderBottom:i < fullRecipe.ingredients.length-1 ? '1px solid var(--ct-border-soft)' : 'none', fontSize:13 }}>
                   <span style={{ fontFamily:'var(--mono)', color:'#f0631c', fontWeight:700, fontSize:11 }}>{ing.qty}</span>
                   <span>{ing.item}</span>
                 </li>
@@ -230,11 +230,11 @@ function GeneratedRecipeCard({ idea, availableIngredients }) {
             </ul>
           </div>
           <div style={{ paddingTop:12 }}>
-            <h4 style={{ fontWeight:800, letterSpacing:'-0.02em', fontSize:13, color:'#0b1220', margin:'0 0 8px' }}>Method</h4>
+            <h4 style={{ fontWeight:800, letterSpacing:'-0.02em', fontSize:13, color:'var(--ct-label)', margin:'0 0 8px' }}>Method</h4>
             {fullRecipe.steps.map((s, i) => (
-              <div key={i} style={{ display:'grid', gridTemplateColumns:'34px 1fr', gap:8, padding:'10px 0', borderBottom:i < fullRecipe.steps.length-1 ? '1px solid rgba(14,26,47,.06)' : 'none', alignItems:'start' }}>
-                <span style={{ fontFamily:'var(--display)', fontSize:18, color:'rgba(14,26,47,.22)', fontStyle:'italic', fontWeight:500, lineHeight:1.1 }}>{i+1}</span>
-                <p style={{ margin:0, fontSize:13, lineHeight:1.5, color:'#3d3d3d' }}>{s}</p>
+              <div key={i} style={{ display:'grid', gridTemplateColumns:'34px 1fr', gap:8, padding:'10px 0', borderBottom:i < fullRecipe.steps.length-1 ? '1px solid var(--ct-border-soft)' : 'none', alignItems:'start' }}>
+                <span style={{ fontFamily:'var(--display)', fontSize:18, color:'var(--ct-step-muted)', fontStyle:'italic', fontWeight:500, lineHeight:1.1 }}>{i+1}</span>
+                <p style={{ margin:0, fontSize:13, lineHeight:1.5, color:'var(--ct-text-body)' }}>{s}</p>
               </div>
             ))}
           </div>
@@ -270,13 +270,13 @@ function MealDBCard({ meal }) {
   };
 
   return (
-    <div style={{ background:'var(--white)', border:'1px solid rgba(14,26,47,.10)', borderRadius:18, overflow:'hidden' }}>
+    <div style={{ background:'var(--white)', border:'1px solid var(--ct-border)', borderRadius:18, overflow:'hidden' }}>
       {/* Summary row */}
       <div style={{ display:'flex', gap:14, padding:16, alignItems:'center' }}>
         <img src={meal.thumb} alt={meal.title} style={{ width:64, height:64, borderRadius:12, objectFit:'cover', flexShrink:0 }}/>
         <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ fontFamily:'var(--display)', fontSize:16, fontWeight:700, letterSpacing:'-0.02em', marginBottom:4, color:'#0b1220' }}>{meal.title}</div>
-          <div style={{ fontSize:12, color:'#515151' }}>
+          <div style={{ fontFamily:'var(--display)', fontSize:16, fontWeight:700, letterSpacing:'-0.02em', marginBottom:4, color:'var(--ct-label)' }}>{meal.title}</div>
+          <div style={{ fontSize:12, color:'var(--ct-text-soft)' }}>
             Matches <span style={{ color:'#f0631c', fontWeight:600 }}>{meal.matchedIngredients.join(', ')}</span>
           </div>
         </div>
@@ -284,7 +284,7 @@ function MealDBCard({ meal }) {
           <button onClick={onExpand} className="dt-btn ghost sm" style={{ flexShrink:0 }}>See recipe →</button>
         )}
         {phase === 'loading' && (
-          <div style={{ fontSize:12, color:'#8a8a8a', flexShrink:0 }}>Loading…</div>
+          <div style={{ fontSize:12, color:'var(--ct-muted)', flexShrink:0 }}>Loading…</div>
         )}
         {phase === 'error' && (
           <div style={{ fontSize:12, color:'#c0392b', flexShrink:0 }}>{err}</div>
@@ -293,19 +293,19 @@ function MealDBCard({ meal }) {
 
       {/* Full recipe */}
       {phase === 'done' && details && (
-        <div style={{ borderTop:'1px solid rgba(14,26,47,.08)', padding:16, display:'flex', flexDirection:'column', gap:14 }}>
+        <div style={{ borderTop:'1px solid var(--ct-border-soft)', padding:16, display:'flex', flexDirection:'column', gap:14 }}>
           {(details.cuisine || details.category) && (
             <div style={{ display:'flex', gap:6 }}>
-              {details.cuisine   && <span style={{ padding:'4px 10px', borderRadius:999, background:'rgba(14,26,47,.06)', fontSize:12, fontWeight:600, color:'#1a305c' }}>{details.cuisine}</span>}
-              {details.category  && <span style={{ padding:'4px 10px', borderRadius:999, background:'rgba(14,26,47,.06)', fontSize:12, fontWeight:600, color:'#1a305c' }}>{details.category}</span>}
+              {details.cuisine   && <span style={{ padding:'4px 10px', borderRadius:999, background:'var(--ct-kicker-bg)', fontSize:12, fontWeight:600, color:'var(--ct-chip-idle-color)' }}>{details.cuisine}</span>}
+              {details.category  && <span style={{ padding:'4px 10px', borderRadius:999, background:'var(--ct-kicker-bg)', fontSize:12, fontWeight:600, color:'var(--ct-chip-idle-color)' }}>{details.category}</span>}
             </div>
           )}
 
           <div>
-            <div style={{ fontSize:11, fontWeight:700, color:'#8a8a8a', letterSpacing:'0.06em', textTransform:'uppercase', marginBottom:8 }}>Ingredients</div>
+            <div style={{ fontSize:11, fontWeight:700, color:'var(--ct-muted)', letterSpacing:'0.06em', textTransform:'uppercase', marginBottom:8 }}>Ingredients</div>
             <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
               {details.ingredients.map((ing, i) => (
-                <div key={i} style={{ display:'grid', gridTemplateColumns:'80px 1fr', gap:10, padding:'7px 0', borderBottom: i < details.ingredients.length - 1 ? '1px solid rgba(14,26,47,.06)' : 'none', fontSize:13.5 }}>
+                <div key={i} style={{ display:'grid', gridTemplateColumns:'80px 1fr', gap:10, padding:'7px 0', borderBottom: i < details.ingredients.length - 1 ? '1px solid var(--ct-border-soft)' : 'none', fontSize:13.5 }}>
                   <span style={{ fontFamily:'var(--mono)', color:'#f0631c', fontWeight:600, fontSize:12 }}>{ing.qty}</span>
                   <span>{ing.item}</span>
                 </div>
@@ -314,11 +314,11 @@ function MealDBCard({ meal }) {
           </div>
 
           <div>
-            <div style={{ fontSize:11, fontWeight:700, color:'#8a8a8a', letterSpacing:'0.06em', textTransform:'uppercase', marginBottom:8 }}>Method</div>
+            <div style={{ fontSize:11, fontWeight:700, color:'var(--ct-muted)', letterSpacing:'0.06em', textTransform:'uppercase', marginBottom:8 }}>Method</div>
             {details.steps.map((s, i) => (
-              <div key={i} style={{ display:'grid', gridTemplateColumns:'34px 1fr', gap:8, padding:'10px 0', borderBottom: i < details.steps.length - 1 ? '1px solid rgba(14,26,47,.06)' : 'none', alignItems:'start' }}>
-                <span style={{ fontFamily:'var(--display)', fontSize:18, color:'rgba(14,26,47,.22)', fontStyle:'italic', fontWeight:500 }}>{i + 1}</span>
-                <p style={{ margin:0, fontSize:13.5, lineHeight:1.55, color:'#3d3d3d' }}>{s}</p>
+              <div key={i} style={{ display:'grid', gridTemplateColumns:'34px 1fr', gap:8, padding:'10px 0', borderBottom: i < details.steps.length - 1 ? '1px solid var(--ct-border-soft)' : 'none', alignItems:'start' }}>
+                <span style={{ fontFamily:'var(--display)', fontSize:18, color:'var(--ct-step-muted)', fontStyle:'italic', fontWeight:500 }}>{i + 1}</span>
+                <p style={{ margin:0, fontSize:13.5, lineHeight:1.55, color:'var(--ct-text-body)' }}>{s}</p>
               </div>
             ))}
           </div>
@@ -348,7 +348,7 @@ function FindResults({ results, availableIngredients, onRevise, onViewRecipe }) 
             <Icon.sparkle style={{ width:14, height:14 }}/>
             Chef Tool
           </div>
-          <h1 className="dt-serif" style={{ fontSize:34, lineHeight:1.05, margin:0, letterSpacing:'-0.04em', color:'#0b1220' }}>Here's what you can make</h1>
+          <h1 className="dt-serif" style={{ fontSize:34, lineHeight:1.05, margin:0, letterSpacing:'-0.04em', color:'var(--ct-label)' }}>Here's what you can make</h1>
         </div>
         <button onClick={onRevise} className="dt-btn ghost sm" style={{ flexShrink:0 }}>Search again</button>
       </div>
@@ -357,8 +357,8 @@ function FindResults({ results, availableIngredients, onRevise, onViewRecipe }) 
       {mealdb.length > 0 && (
         <div style={{ marginBottom:24 }}>
           <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', gap:10, marginBottom:10, padding:'0 2px' }}>
-            <h3 style={{ margin:0, fontWeight:800, letterSpacing:'-0.02em', fontSize:14, color:'#0b1220' }}>Recipes</h3>
-            <span style={{ fontSize:12, color:'#666' }}>{mealdb.length} found</span>
+            <h3 style={{ margin:0, fontWeight:800, letterSpacing:'-0.02em', fontSize:14, color:'var(--ct-label)' }}>Recipes</h3>
+            <span style={{ fontSize:12, color:'var(--ct-hint)' }}>{mealdb.length} found</span>
           </div>
           <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
             {mealdb.map(meal => <MealDBCard key={meal.id} meal={meal}/>)}
@@ -370,10 +370,10 @@ function FindResults({ results, availableIngredients, onRevise, onViewRecipe }) 
       {ideas.length > 0 && (
         <div style={{ marginBottom:24 }}>
           <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', gap:10, marginBottom:10, padding:'0 2px' }}>
-            <h3 style={{ margin:0, fontWeight:800, letterSpacing:'-0.02em', fontSize:14, color:'#0b1220' }}>
+            <h3 style={{ margin:0, fontWeight:800, letterSpacing:'-0.02em', fontSize:14, color:'var(--ct-label)' }}>
               {mealdb.length > 0 ? 'More ideas from the guru' : 'Ideas from the guru'}
             </h3>
-            <span style={{ fontSize:12, color:'#666' }}>{ideas.length} ideas</span>
+            <span style={{ fontSize:12, color:'var(--ct-hint)' }}>{ideas.length} ideas</span>
           </div>
           <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
             {ideas.map((idea, i) => (
@@ -384,7 +384,7 @@ function FindResults({ results, availableIngredients, onRevise, onViewRecipe }) 
       )}
 
       {mealdb.length === 0 && ideas.length === 0 && (
-        <div style={{ textAlign:'center', padding:'32px 0', color:'#8a8a8a', fontSize:14 }}>
+        <div style={{ textAlign:'center', padding:'32px 0', color:'var(--ct-muted)', fontSize:14 }}>
           No recipes found. Try different ingredients.
         </div>
       )}
@@ -572,34 +572,26 @@ function Translator({ recipeId, onBack, onNavigate }) {
 
       <div className="dt-translator-right">
         {/* ── Mode tabs ── */}
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:14 }}>
+        <div className="dt-mode-tabs">
           {[
             { id:'find', label:'Chef Tool', sub:'Cook what you have', icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 6a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6Z"/><path d="M5 10h14"/><path d="M15 7v2"/></svg> },
             { id:'scan', label:'Scanner',    sub:'Read food labels fast', icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg> },
-          ].map(({ id, label, sub, icon }) => {
-            const active = mode === id;
-            return (
-              <button
-                key={id}
-                onClick={() => switchMode(id)}
-                style={{
-                  position:'relative', borderRadius:18, border: active ? '1px solid rgba(240,99,28,.35)' : '1px solid rgba(14,26,47,.10)',
-                  background: active ? 'rgba(255,255,255,.98)' : 'rgba(255,255,255,.75)',
-                  overflow:'hidden', cursor:'pointer', minHeight:106, padding:'12px 10px',
-                  display:'flex', flexDirection:'column', justifyContent:'space-between',
-                  boxShadow: active ? '0 18px 42px rgba(14,26,47,.16)' : 'none',
-                  transform: active ? 'translateY(-1px)' : 'none',
-                  transition:'all .18s ease', textAlign:'left',
-                }}
-              >
-                <span style={{ width:30, height:30, borderRadius:14, display:'grid', placeItems:'center', background:'rgba(14,26,47,.06)', border:'1px solid rgba(14,26,47,.08)', color:'#142647', flexShrink:0, alignSelf:'flex-start' }}>{icon}</span>
-                <div>
-                  <div style={{ fontFamily:'var(--display)', fontWeight:750, letterSpacing:'-0.03em', fontSize:14, color:'#0b1220' }}>{label}</div>
-                  <div style={{ fontSize:11, lineHeight:1.3, color:'#515151', marginTop:4 }}>{sub}</div>
-                </div>
-              </button>
-            );
-          })}
+          ].map(({ id, label, sub, icon }) => (
+            <button
+              key={id}
+              type="button"
+              data-mode={id}
+              className={`dt-mode-tab${mode === id ? ' active' : ''}`}
+              onClick={() => switchMode(id)}
+              aria-pressed={mode === id}
+            >
+              <span className="dt-mode-tab-icon">{icon}</span>
+              <div>
+                <div className="dt-mode-tab-title">{label}</div>
+                <div className="dt-mode-tab-sub">{sub}</div>
+              </div>
+            </button>
+          ))}
         </div>
 
         {/* ── Chef Tool mode ── */}
@@ -608,7 +600,7 @@ function Translator({ recipeId, onBack, onNavigate }) {
 
             {/* Ingredient input card */}
             <div style={CT.card}>
-              <div style={{ padding:'14px 16px', borderBottom: ingredients.size > 0 ? '1px solid rgba(14,26,47,.08)' : 'none' }}>
+              <div style={{ padding:'14px 16px', borderBottom: ingredients.size > 0 ? '1px solid var(--ct-border-soft)' : 'none' }}>
                 {(ingredients.size > 0 || cuisineFilter) && (
                   <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:10 }}>
                     {/* Cuisine tag */}
@@ -625,7 +617,7 @@ function Translator({ recipeId, onBack, onNavigate }) {
                         <button onClick={() => removeIngredient(ing)} style={{ background:'none', border:'none', cursor:'pointer', padding:0, lineHeight:1, color:'#f0631c', fontSize:15 }}>×</button>
                       </span>
                     ))}
-                    <button onClick={() => { setIngredients(new Set()); setCuisineFilter(null); }} style={{ padding:'6px 10px', borderRadius:999, background:'none', border:'1px solid rgba(14,26,47,.10)', color:'#8a8a8a', fontSize:12, cursor:'pointer' }}>Clear all</button>
+                    <button onClick={() => { setIngredients(new Set()); setCuisineFilter(null); }} style={{ padding:'6px 10px', borderRadius:999, background:'none', border:'1px solid var(--ct-border)', color:'var(--ct-muted)', fontSize:12, cursor:'pointer' }}>Clear all</button>
                   </div>
                 )}
                 <IngredientInput
@@ -637,18 +629,18 @@ function Translator({ recipeId, onBack, onNavigate }) {
               </div>
               {!pasteMode ? (
                 <button onClick={() => setPasteMode(true)}
-                  style={{ width:'100%', padding:'11px 16px', background:'none', border:'none', cursor:'pointer', fontSize:13, color:'#8a8a8a', textAlign:'left', display:'flex', alignItems:'center', gap:6 }}>
+                  style={{ width:'100%', padding:'11px 16px', background:'none', border:'none', cursor:'pointer', fontSize:13, color:'var(--ct-muted)', textAlign:'left', display:'flex', alignItems:'center', gap:6 }}>
                   <span>📋</span> Or paste a full recipe to extract ingredients
                 </button>
               ) : (
                 <div style={{ padding:'14px 16px', display:'flex', flexDirection:'column', gap:10 }}>
                   <textarea
-                    style={{ width:'100%', minHeight:120, resize:'vertical', borderRadius:12, border:'1px solid rgba(14,26,47,.14)', background:'rgba(250,245,236,.55)', padding:'10px 12px', outline:'none', fontSize:13.5, lineHeight:1.5, color:'#161616', boxSizing:'border-box' }}
+                    style={{ width:'100%', minHeight:120, resize:'vertical', borderRadius:12, border:'1px solid var(--ct-border-input)', background:'var(--ct-input-bg)', padding:'10px 12px', outline:'none', fontSize:13.5, lineHeight:1.5, color:'var(--ct-body)', boxSizing:'border-box' }}
                     placeholder="Paste any recipe here — we'll pull out the ingredients…"
                     value={pasteText}
                     onChange={e => setPasteText(e.target.value)}
                     onFocus={e => { e.target.style.borderColor='rgba(240,99,28,.40)'; e.target.style.boxShadow='0 0 0 4px rgba(240,99,28,.10)'; }}
-                    onBlur={e  => { e.target.style.borderColor='rgba(14,26,47,.14)'; e.target.style.boxShadow='none'; }}
+                    onBlur={e  => { e.target.style.borderColor='var(--ct-border-input)'; e.target.style.boxShadow='none'; }}
                   />
                   <div style={{ display:'flex', gap:8 }}>
                     <button onClick={extractFromPaste} className="dt-btn dark sm" disabled={!pasteText.trim()} style={{ flex:1 }}>Extract ingredients</button>
@@ -660,13 +652,13 @@ function Translator({ recipeId, onBack, onNavigate }) {
 
             {/* Live results */}
             {ingredients.size === 0 && !cuisineFilter && (
-              <div style={{ textAlign:'center', padding:'24px 0', color:'#aeaeae', fontSize:14 }}>
+              <div style={{ textAlign:'center', padding:'24px 0', color:'var(--ct-muted)', fontSize:14 }}>
                 Add an ingredient or cuisine to see what you can make
               </div>
             )}
 
             {mealdbLoading && (ingredients.size > 0 || cuisineFilter) && (
-              <div style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 2px', fontSize:13, color:'#8a8a8a' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 2px', fontSize:13, color:'var(--ct-muted)' }}>
                 <div className="dt-spin" style={{ width:16, height:16, borderRadius:'50%', background:'conic-gradient(#f0631c,transparent 65%)', WebkitMask:'radial-gradient(closest-side,transparent 60%,#000 62%)', mask:'radial-gradient(closest-side,transparent 60%,#000 62%)', flexShrink:0 }}/>
                 Searching recipes…
               </div>
@@ -683,13 +675,13 @@ function Translator({ recipeId, onBack, onNavigate }) {
                 {mealdbResults.length > 0 ? (
                   <>
                     <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', padding:'0 2px' }}>
-                      <h3 style={{ margin:0, fontWeight:800, letterSpacing:'-0.02em', fontSize:14, color:'#0b1220' }}>Recipes</h3>
-                      <span style={{ fontSize:12, color:'#666' }}>{mealdbResults.length} found</span>
+                      <h3 style={{ margin:0, fontWeight:800, letterSpacing:'-0.02em', fontSize:14, color:'var(--ct-label)' }}>Recipes</h3>
+                      <span style={{ fontSize:12, color:'var(--ct-hint)' }}>{mealdbResults.length} found</span>
                     </div>
                     {mealdbResults.map(meal => <MealDBCard key={meal.id} meal={meal}/>)}
                   </>
                 ) : (
-                  <div style={{ fontSize:13, color:'#8a8a8a', padding:'8px 2px' }}>No recipes found for those ingredients.</div>
+                  <div style={{ fontSize:13, color:'var(--ct-muted)', padding:'8px 2px' }}>No recipes found for those ingredients.</div>
                 )}
               </div>
             )}
@@ -709,7 +701,7 @@ function Translator({ recipeId, onBack, onNavigate }) {
                 )}
 
                 {aiLoading && (
-                  <div style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 2px', fontSize:13, color:'#8a8a8a' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 2px', fontSize:13, color:'var(--ct-muted)' }}>
                     <div className="dt-spin" style={{ width:16, height:16, borderRadius:'50%', background:'conic-gradient(#f0631c,transparent 65%)', WebkitMask:'radial-gradient(closest-side,transparent 60%,#000 62%)', mask:'radial-gradient(closest-side,transparent 60%,#000 62%)', flexShrink:0 }}/>
                     Generating ideas…
                   </div>
@@ -722,8 +714,8 @@ function Translator({ recipeId, onBack, onNavigate }) {
                 {aiIdeas && aiIdeas.length > 0 && (
                   <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
                     <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', padding:'0 2px' }}>
-                      <h3 style={{ margin:0, fontWeight:800, letterSpacing:'-0.02em', fontSize:14, color:'#0b1220' }}>AI ideas</h3>
-                      <button onClick={() => setAiIdeas(null)} style={{ fontSize:12, color:'#8a8a8a', background:'none', border:'none', cursor:'pointer' }}>Clear</button>
+                      <h3 style={{ margin:0, fontWeight:800, letterSpacing:'-0.02em', fontSize:14, color:'var(--ct-label)' }}>AI ideas</h3>
+                      <button onClick={() => setAiIdeas(null)} style={{ fontSize:12, color:'var(--ct-muted)', background:'none', border:'none', cursor:'pointer' }}>Clear</button>
                     </div>
                     {aiIdeas.map((idea, i) => (
                       <GeneratedRecipeCard key={i} idea={idea} availableIngredients={[...ingredients]}/>

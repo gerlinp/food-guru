@@ -24,7 +24,7 @@ function ReviewDetail({ reviewId, onBack }) {
         <div className="dt-recipe-hero-content">
           <div style={{ display:'flex', gap:8, marginBottom:6 }}>
             <span className="dt-chip accent" style={{ height:28, fontSize:12 }}>{r.cuisine}</span>
-            <span className="dt-chip" style={{ background:'rgba(255,255,255,0.15)', color:'#fff', border:'1px solid rgba(255,255,255,0.25)', height:28, fontSize:12 }}>{r.neighborhood}</span>
+            <span className="dt-chip on-photo">{r.neighborhood}</span>
           </div>
           <h1 className="dt-recipe-hero-title">{r.name}</h1>
           <div style={{ display:'flex', alignItems:'center', gap:14, fontSize:14, opacity:0.95 }}>

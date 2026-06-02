@@ -24,7 +24,7 @@ function Home({ onOpenRecipe, onOpenTranslator, onOpenReviews, onOpenRecipeList 
             <Photo tint={featured.tint} src={featured.photo || undefined} style={{ position:'absolute', inset:0 }}/>
             <div className="dt-hero-photo-tag">
               <span className="dt-chip accent" style={{ height:28, fontSize:12 }}>Editor's pick</span>
-              <span className="dt-chip" style={{ background:'rgba(255,255,255,0.15)', color:'#fff', border:'1px solid rgba(255,255,255,0.25)', height:28, fontSize:12 }}>
+              <span className="dt-chip on-photo">
                 {featured.cuisine}
               </span>
             </div>

@@ -40,8 +40,8 @@ function Recipe({ recipeId, onBack, onOpenTranslator }) {
         <div className="dt-recipe-hero-content">
           <div style={{ display:'flex', gap:8, marginBottom:6 }}>
             <span className="dt-chip accent" style={{ height:28, fontSize:12 }}>Editor's pick</span>
-            <span className="dt-chip" style={{ background:'rgba(255,255,255,0.15)', color:'#fff', border:'1px solid rgba(255,255,255,0.25)', height:28, fontSize:12 }}>{recipe.cuisine}</span>
-            <span className="dt-chip" style={{ background:'rgba(255,255,255,0.15)', color:'#fff', border:'1px solid rgba(255,255,255,0.25)', height:28, fontSize:12 }}>{recipe.category}</span>
+            <span className="dt-chip on-photo">{recipe.cuisine}</span>
+            <span className="dt-chip on-photo">{recipe.category}</span>
           </div>
           <h1 className="dt-recipe-hero-title">{recipe.title}</h1>
           <div style={{ display:'flex', alignItems:'center', gap:18, fontSize:14, opacity:0.95 }}>
@@ -89,7 +89,7 @@ function Recipe({ recipeId, onBack, onOpenTranslator }) {
           {/* Chef Tool CTA */}
           <button
             onClick={() => onOpenTranslator(recipe.id)}
-            style={{ width:'100%', display:'flex', alignItems:'center', gap:16, background:'var(--orange-tint)', border:'1px solid #f6c8a8', borderRadius:18, padding:'16px 20px', textAlign:'left', cursor:'pointer', marginBottom:32 }}
+            style={{ width:'100%', display:'flex', alignItems:'center', gap:16, background:'var(--orange-tint)', border:'1px solid var(--orange-border)', borderRadius:18, padding:'16px 20px', textAlign:'left', cursor:'pointer', marginBottom:32 }}
           >
             <div style={{ width:44, height:44, borderRadius:12, background:'var(--orange)', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center' }}>
               <Icon.sparkle/>
