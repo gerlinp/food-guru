@@ -560,6 +560,7 @@ function formatRecipeAsText(recipe) {
 
 function CompactRecipeView({ recipe, details, onBack, onTransform, searchedIngredients = [], showTransformOptions = false }) {
   const [servings, setServings] = React.useState(details.servings || 4);
+  const [showTransformPanel, setShowTransformPanel] = React.useState(false);
 
   // Pre-check ingredients that match searched ingredients
   const initialChecked = {};
@@ -593,12 +594,12 @@ function CompactRecipeView({ recipe, details, onBack, onTransform, searchedIngre
 
   return (
     <>
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:12 }}>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
         <button onClick={onBack} style={{ background:'none', border:'none', cursor:'pointer', fontSize:13, color:'var(--ink-mute)', padding:0 }}>← Back</button>
-        <span style={{ fontSize:11, fontWeight:700, color:'var(--ct-hint)', textTransform:'uppercase', letterSpacing:'0.05em' }}>{details.cuisine || 'Recipe'}</span>
+        <span style={{ fontSize:10, fontWeight:700, color:'var(--ct-hint)', textTransform:'uppercase', letterSpacing:'0.05em' }}>{details.cuisine || 'Recipe'}</span>
       </div>
 
-      <h2 style={{ margin:'0 0 12px', fontSize:18, fontWeight:700, fontFamily:'var(--display)', lineHeight:1.2, color:'var(--ink)' }}>{details.title}</h2>
+      <h2 style={{ margin:'0 0 10px', fontSize:20, fontWeight:700, fontFamily:'var(--display)', lineHeight:1.2, color:'var(--ink)' }}>{details.title}</h2>
 
       {recipe.thumb && (
         <img src={recipe.thumb} alt={details.title} style={{ width:'100%', height:160, objectFit:'cover', borderRadius:10, marginBottom:16 }}/>
@@ -644,63 +645,84 @@ function CompactRecipeView({ recipe, details, onBack, onTransform, searchedIngre
         </div>
       )}
 
-      {/* Transform options (mobile only) */}
-      {showTransformOptions && (
-        <div style={{ marginTop:16, paddingTop:16, borderTop:'1px solid var(--line-soft)' }}>
-          <h4 style={{ margin:'0 0 12px', fontSize:11, fontWeight:700, color:'var(--ct-label)', textTransform:'uppercase', letterSpacing:'0.05em' }}>Transform options</h4>
+      {/* Expandable Transform Panel */}
+      <button
+        onClick={() => setShowTransformPanel(!showTransformPanel)}
+        style={{
+          width:'100%',
+          display:'flex',
+          alignItems:'center',
+          gap:12,
+          background:'rgba(240,99,28,.08)',
+          border:'1px solid rgba(240,99,28,.20)',
+          borderRadius:12,
+          padding:'12px 14px',
+          marginTop:16,
+          marginBottom:0,
+          textAlign:'left',
+          cursor:'pointer',
+          fontWeight:600,
+          fontSize:13,
+          color:'var(--orange)',
+          transition:'all 200ms ease'
+        }}
+      >
+        <span style={{ flex:1 }}>⚡ Reshape this recipe</span>
+        <span style={{ fontSize:16 }}>{showTransformPanel ? '▼' : '→'}</span>
+      </button>
 
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:12 }}>
-          <div>
-            <label style={{ display:'block', fontSize:10, fontWeight:700, color:'var(--ct-hint)', marginBottom:5 }}>Servings</label>
-            <input type="number" min="1" value={servings} onChange={e => setServings(parseInt(e.target.value) || 1)} style={{ width:'100%', padding:'6px 8px', border:'1px solid var(--ct-border)', borderRadius:6, fontSize:11, boxSizing:'border-box' }}/>
+      {/* Transform Options Panel */}
+      {showTransformPanel && (
+        <div className="fadeInUp" style={{ marginTop:12, paddingTop:14, borderTop:'1px solid var(--line-soft)' }}>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
+            <div>
+              <label style={{ display:'block', fontSize:10, fontWeight:700, color:'var(--ct-hint)', marginBottom:6, textTransform:'uppercase', letterSpacing:'0.05em' }}>Servings</label>
+              <input type="number" min="1" value={servings} onChange={e => setServings(parseInt(e.target.value) || 1)} style={{ width:'100%', padding:'7px 9px', border:'1px solid var(--ct-border)', borderRadius:7, fontSize:12, boxSizing:'border-box' }}/>
+            </div>
+            <div>
+              <label style={{ display:'block', fontSize:10, fontWeight:700, color:'var(--ct-hint)', marginBottom:6, textTransform:'uppercase', letterSpacing:'0.05em' }}>Time</label>
+              <input type="number" min="5" value={time} onChange={e => setTime(parseInt(e.target.value) || 60)} style={{ width:'100%', padding:'7px 9px', border:'1px solid var(--ct-border)', borderRadius:7, fontSize:12, boxSizing:'border-box' }}/>
+            </div>
           </div>
-          <div>
-            <label style={{ display:'block', fontSize:10, fontWeight:700, color:'var(--ct-hint)', marginBottom:5 }}>Time (min)</label>
-            <input type="number" min="5" value={time} onChange={e => setTime(parseInt(e.target.value) || 60)} style={{ width:'100%', padding:'6px 8px', border:'1px solid var(--ct-border)', borderRadius:6, fontSize:11, boxSizing:'border-box' }}/>
-          </div>
-        </div>
 
-        <div style={{ marginBottom:12 }}>
-          <label style={{ display:'block', fontSize:10, fontWeight:700, color:'var(--ct-hint)', marginBottom:5 }}>Skill</label>
-          <div style={{ display:'flex', gap:6 }}>
-            {['Easy', 'Intermediate', 'Advanced'].map(s => (
-              <button key={s} onClick={() => setSkill(s)} style={{ flex:1, padding:'5px 0', borderRadius:5, border:'1px solid var(--ct-border)', background: skill === s ? 'var(--orange)' : 'var(--white)', color: skill === s ? 'white' : 'var(--ink)', cursor:'pointer', fontSize:10, fontWeight:600 }}>{s}</button>
-            ))}
+          <div style={{ marginBottom:12 }}>
+            <label style={{ display:'block', fontSize:10, fontWeight:700, color:'var(--ct-hint)', marginBottom:6, textTransform:'uppercase', letterSpacing:'0.05em' }}>Skill level</label>
+            <div style={{ display:'flex', gap:6 }}>
+              {['Easy', 'Intermediate', 'Advanced'].map(s => (
+                <button key={s} onClick={() => setSkill(s)} style={{ flex:1, padding:'6px 0', borderRadius:6, border:'1px solid var(--ct-border)', background: skill === s ? 'var(--orange)' : 'var(--white)', color: skill === s ? 'white' : 'var(--ink)', cursor:'pointer', fontSize:11, fontWeight:600 }}>{s}</button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        <div style={{ marginBottom:12 }}>
-          <label style={{ display:'block', fontSize:10, fontWeight:700, color:'var(--ct-hint)', marginBottom:5 }}>Cuisine</label>
-          <input type="text" placeholder="Thai, Moroccan..." value={cuisine} onChange={e => setCuisine(e.target.value)} style={{ width:'100%', padding:'6px 8px', border:'1px solid var(--ct-border)', borderRadius:6, fontSize:11, boxSizing:'border-box' }}/>
-        </div>
-
-        <div style={{ marginBottom:12 }}>
-          <label style={{ display:'block', fontSize:10, fontWeight:700, color:'var(--ct-hint)', marginBottom:5 }}>Dietary</label>
-          <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
-            {['Vegan', 'Vegetarian', 'Gluten-Free', 'Dairy-Free'].map(d => (
-              <button key={d} onClick={() => setDiet(toggleArray(diet, d))} style={{ padding:'4px 8px', borderRadius:999, border:'1px solid var(--ct-border)', background: diet.includes(d) ? 'rgba(240,99,28,.15)' : 'var(--white)', color: diet.includes(d) ? 'var(--orange)' : 'var(--ink)', cursor:'pointer', fontSize:9, fontWeight:600 }}>{d}</button>
-            ))}
+          <div style={{ marginBottom:12 }}>
+            <label style={{ display:'block', fontSize:10, fontWeight:700, color:'var(--ct-hint)', marginBottom:6, textTransform:'uppercase', letterSpacing:'0.05em' }}>Cuisine remix</label>
+            <input type="text" placeholder="e.g. Thai, Moroccan" value={cuisine} onChange={e => setCuisine(e.target.value)} style={{ width:'100%', padding:'7px 9px', border:'1px solid var(--ct-border)', borderRadius:7, fontSize:12, boxSizing:'border-box' }}/>
           </div>
-        </div>
 
-        <div style={{ marginBottom:12 }}>
-          <label style={{ display:'block', fontSize:10, fontWeight:700, color:'var(--ct-hint)', marginBottom:5 }}>Avoid</label>
-          <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
-            {['Nuts', 'Eggs', 'Soy', 'Shellfish'].map(a => (
-              <button key={a} onClick={() => setAllergies(toggleArray(allergies, a))} style={{ padding:'4px 8px', borderRadius:999, border:'1px solid var(--ct-border)', background: allergies.includes(a) ? 'rgba(192,57,43,.15)' : 'var(--white)', color: allergies.includes(a) ? '#c0392b' : 'var(--ink)', cursor:'pointer', fontSize:9, fontWeight:600 }}>{a}</button>
-            ))}
+          <div style={{ marginBottom:12 }}>
+            <label style={{ display:'block', fontSize:10, fontWeight:700, color:'var(--ct-hint)', marginBottom:6, textTransform:'uppercase', letterSpacing:'0.05em' }}>Dietary</label>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:5 }}>
+              {['Vegan', 'Vegetarian', 'Gluten-Free', 'Dairy-Free'].map(d => (
+                <button key={d} onClick={() => setDiet(toggleArray(diet, d))} style={{ padding:'5px 10px', borderRadius:999, border:'1px solid var(--ct-border)', background: diet.includes(d) ? 'rgba(240,99,28,.15)' : 'var(--white)', color: diet.includes(d) ? 'var(--orange)' : 'var(--ink)', cursor:'pointer', fontSize:10, fontWeight:600 }}>{d}</button>
+              ))}
+            </div>
           </div>
-        </div>
+
+          <div style={{ marginBottom:12 }}>
+            <label style={{ display:'block', fontSize:10, fontWeight:700, color:'var(--ct-hint)', marginBottom:6, textTransform:'uppercase', letterSpacing:'0.05em' }}>Avoid</label>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:5 }}>
+              {['Nuts', 'Eggs', 'Soy', 'Shellfish'].map(a => (
+                <button key={a} onClick={() => setAllergies(toggleArray(allergies, a))} style={{ padding:'5px 10px', borderRadius:999, border:'1px solid var(--ct-border)', background: allergies.includes(a) ? 'rgba(192,57,43,.15)' : 'var(--white)', color: allergies.includes(a) ? '#c0392b' : 'var(--ink)', cursor:'pointer', fontSize:10, fontWeight:600 }}>{a}</button>
+              ))}
+            </div>
+          </div>
+
+          <button onClick={() => {
+            const excludedItems = Object.keys(checked).filter(i => !checked[i]).map(i => details.ingredients[parseInt(i)].item);
+            onTransform(excludedItems);
+          }} style={{ width:'100%', padding:'10px 12px', borderRadius:8, border:'none', background:'var(--orange)', color:'white', cursor:'pointer', fontWeight:600, fontSize:12, marginTop:12 }}>Transform recipe</button>
         </div>
       )}
-
-      <div style={{ display:'flex', gap:8, marginTop: showTransformOptions ? 12 : 16 }}>
-        <button onClick={() => {
-          const excludedItems = Object.keys(checked).filter(i => !checked[i]).map(i => details.ingredients[parseInt(i)].item);
-          onTransform(excludedItems);
-        }} style={{ flex:1, padding:'8px 10px', borderRadius:8, border:'none', background:'var(--orange)', color:'white', cursor:'pointer', fontWeight:600, fontSize:11 }}>Transform</button>
-        <button onClick={onBack} style={{ flex:1, padding:'8px 10px', borderRadius:8, border:'1px solid var(--ct-border)', background:'var(--white)', cursor:'pointer', fontWeight:600, fontSize:11 }}>Back</button>
-      </div>
     </>
   );
 }
@@ -838,8 +860,17 @@ function Translator({ recipeId, onBack, onNavigate }) {
   const [viewingRecipe,   setViewingRecipe]   = React.useState(null);
   const [recipeDetails,   setRecipeDetails]   = React.useState(null);
   const [recipeLoading,   setRecipeLoading]   = React.useState(false);
+  const [recipeChecked,   setRecipeChecked]   = React.useState({});
+  const [transformStep,   setTransformStep]   = React.useState(null);
   const [excludedIngredients, setExcludedIngredients] = React.useState([]);
+  const translatorLeftRef = React.useRef(null);
   const searchId = React.useRef(0);
+
+  React.useEffect(() => {
+    if (viewingRecipe && translatorLeftRef.current) {
+      translatorLeftRef.current.scrollTop = 0;
+    }
+  }, [viewingRecipe]);
 
   const ITEMS_PER_PAGE = 8;
   const paginatedResults = mealdbResults
@@ -918,6 +949,7 @@ function Translator({ recipeId, onBack, onNavigate }) {
 
   const onViewRecipe = async (meal) => {
     setRecipeLoading(true);
+    setRecipeChecked({});
     try {
       const details = await getRecipeDetail(meal.id);
       setViewingRecipe(meal);
@@ -932,28 +964,10 @@ function Translator({ recipeId, onBack, onNavigate }) {
 
   return (
     <div className="dt-translator">
-      {/* Offcanvas modal for mobile recipe view */}
-      {viewingRecipe && recipeDetails && (
-        <>
-          <div className={`dt-offcanvas-backdrop ${viewingRecipe ? 'show' : ''}`} onClick={() => { setViewingRecipe(null); setRecipeDetails(null); }}/>
-          <div className={`dt-offcanvas ${viewingRecipe ? 'show' : ''}`}>
-            <div className="dt-offcanvas-header">
-              <div className="dt-offcanvas-handle"/>
-            </div>
-            <div className="dt-offcanvas-body">
-              <CompactRecipeView recipe={viewingRecipe} details={recipeDetails} onBack={() => { setViewingRecipe(null); setRecipeDetails(null); }} onTransform={(excluded) => { setExcludedIngredients(excluded); setMode('transform'); }} searchedIngredients={[...ingredients]} showTransformOptions={true} />
-            </div>
-            <div className="dt-offcanvas-footer">
-              <button onClick={() => { setViewingRecipe(null); setRecipeDetails(null); }} style={{ flex:1, padding:'10px 12px', borderRadius:10, border:'1px solid var(--ct-border)', background:'var(--white)', cursor:'pointer', fontWeight:600, fontSize:12 }}>Close</button>
-              <button onClick={() => setMode('transform')} style={{ flex:1, padding:'10px 12px', borderRadius:10, border:'none', background:'var(--orange)', color:'white', cursor:'pointer', fontWeight:600, fontSize:12 }}>Transform</button>
-            </div>
-          </div>
-        </>
-      )}
-
-      <div className="dt-translator-left">
+      {/* Desktop left panel / Mobile header */}
+      <div ref={translatorLeftRef} className={`dt-translator-left ${viewingRecipe ? 'open' : ''}`}>
         {viewingRecipe && recipeDetails ? (
-          <CompactRecipeView recipe={viewingRecipe} details={recipeDetails} onBack={() => { setViewingRecipe(null); setRecipeDetails(null); }} onTransform={() => setMode('transform')} searchedIngredients={[...ingredients]} />
+          <RecipeDetailsComplete recipe={viewingRecipe} details={recipeDetails} onBack={() => { setViewingRecipe(null); setRecipeDetails(null); setTransformStep(null); }} searchedIngredients={[...ingredients]} checked={recipeChecked} setChecked={setRecipeChecked} transformStep={transformStep} setTransformStep={setTransformStep} />
         ) : (
           <>
             <div style={{ fontSize:13, color:'var(--ink-mute)' }}>
@@ -979,6 +993,11 @@ function Translator({ recipeId, onBack, onNavigate }) {
           </>
         )}
       </div>
+
+      {/* Offcanvas backdrop for mobile */}
+      {viewingRecipe && recipeDetails && (
+        <div className="dt-offcanvas-backdrop" onClick={() => { setViewingRecipe(null); setRecipeDetails(null); setTransformStep(null); }}/>
+      )}
 
       <div className="dt-translator-right">
         {/* ── Mode tabs ── */}

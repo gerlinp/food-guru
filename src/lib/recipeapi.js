@@ -265,6 +265,7 @@ async function getRecipeDetail(id) {
       steps,
       youtubeUrl: m.strYoutube || null,
       sourceUrl: m.strSource || null,
+      servings: 1,
     };
   } catch (e) {
     console.error('[mealdb] detail error:', e);
